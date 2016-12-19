@@ -1,0 +1,91 @@
+#!/bin/ksh
+i=0
+LUSER=sistemas
+x=1
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+HORA=+%Y-%m-%d--%H:%M:%S
+
+##Captura de salida
+trap force_exit SIGINT
+
+
+force_exit(){
+	echo 
+	echo "Exiting..."
+	exit 3
+}
+
+print_uso(){
+cat <<EOF
+        Usage:
+        ./script [-h|-v|-u|-r] trozo_nombre_conocido_de_maquina
+EOF
+exit
+}
+
+if [ $# -eq 0 ];then
+print_uso
+fi
+
+while [ $# -gt 0 ];
+do
+    case $1 in
+-h)     
+print_uso
+;;
+-u) LUSER=$2
+shift
+shift
+;;
+-r) LUSER=root
+shift
+;;
+-v) DEBUG=-v
+shift
+;;
+*) break
+;;
+esac
+done
+
+#cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep $1 |\
+grep -v ^# $HOME/list | uniq -u |sort | grep $1 |\
+while read MAQUINA ; do
+i=$(($i+1))
+MAQUINA[$i]=$MAQUINA
+echo "$i = ${bold}$MAQUINA${normal}"
+; done
+
+case $i in
+0) echo "Not found"
+        exit 
+;;      
+1) echo "${bold}${MAQUINA[$i]}${normal} ${bold}FOUND${normal}"
+        ssh $DEBUG -l $LUSER ${MAQUINA[$i]}
+;;      
+*)
+
+printf "Type 1 to $i to login: "
+read  ELECCION
+if [ "$ELECCION" -gt $i ]; then
+echo "U dont know how to read bruh?"
+exit 
+fi
+
+if [ -z "$ELECCION" ]; then
+echo "U dont know how to read bruh?"
+exit 
+fi
+
+echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $HOME/logs/connections
+ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
+EXITUS=$(echo $?)
+echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS" >> $HOME/logs/connections
+
+;;
+
+esac
+exit
+
