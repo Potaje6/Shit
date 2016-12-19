@@ -74,10 +74,12 @@ if [ $BUCLE -eq 1 ]; then
 fi
 
 
-$RUIDO $MIERDA | padsp tee /dev/audio > /dev/null
+
 
 if [ "$SEGUNDO_PLANO" -eq 1 ]; then
 	$RUIDO $MIERDA | padsp tee /dev/audio > /dev/null &
+else
+	$RUIDO $MIERDA | padsp tee /dev/audio > /dev/null
 fi
 
 exit 0

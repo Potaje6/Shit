@@ -68,16 +68,27 @@ case $i in
 *)
 
 printf "Type 1 to $i to login: "
+
+re='^[0-9]+$'
+
 read  ELECCION
-if [ "$ELECCION" -gt $i ]; then
-echo "U dont know how to read bruh?"
-exit 
-fi
 
 if [ -z "$ELECCION" ]; then
 echo "U dont know how to read bruh?"
 exit 
 fi
+
+if ! [[ "$ELECCION" =~ $re ]] ; then
+   echo "U dont know how to read bruh?"
+   exit
+fi
+
+if [ "$ELECCION" -gt $i ]; then
+echo "U dont know how to read bruh?"
+exit 
+fi
+
+
 
 echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $HOME/logs/connections
 ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
@@ -88,4 +99,3 @@ echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} -
 
 esac
 exit
-
