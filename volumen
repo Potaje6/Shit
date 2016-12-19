@@ -1,0 +1,83 @@
+#!/bin/bash
+##Daniel Molina
+##Script para subir/bajar/muter/desmutear el volumen con las flechitas
+
+#Funcion del menu
+#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+ echo "current vol: " $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+menu()
+{	cat <<EOF
+	up arrow = UP VOL
+	down arrow = DOWN VOL
+	left arrow = MUTE
+	right arrow = UNMUTE
+	X = Set volume in Window
+EOF
+}
+
+#notify-send "Volume" -t 200 -i notification-audio-volume-medium -h int:value:$(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g'; done)
+
+
+
+#funcion de control
+volume(){
+
+	case $opcion in
+        'A')  
+		amixer -D pulse sset Master 10%+ > /dev/null
+		#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+		echo "VOL UP 10% current: " $( amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' )
+
+		unset opcion
+;;
+        'B')  
+		amixer -D pulse sset Master 10%- > /dev/null
+		#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+		echo "VOL DOWN 10% current: " $( amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' )
+		unset opcion
+;;
+        'D')  
+		amixer -D pulse sset Master mute > /dev/null
+		#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+		echo "VOL MUTED current: " $( amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' )
+		unset opcion
+;;
+        'C')  
+		amixer -D pulse sset Master unmute > /dev/null
+		#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+		echo "VOL UNMUTED current: " $( amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' )
+		unset opcion
+;;
+        'X')  
+		amixer -D pulse sset Master $(zenity --scale --title "PotaVolumen" --text "Ajusta el volumen" --value $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' | sed 's/%//')
+)% > /dev/null
+		#amixer -D pulse get Master |  grep  Front| grep --color=never -E '[0-9]'
+
+		echo "VOL current: " $( amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g' )
+		unset opcion
+		exit
+;;
+#		*) menu
+#		shift
+	esac
+}
+
+
+menu
+
+
+
+#lectura de teclas
+while true ;
+do
+read -r -sn1 opcion
+volume 
+done
+
+
+

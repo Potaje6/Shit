@@ -1,0 +1,125 @@
+#!/bin/bash
+#Script courtesy of Alfred456654 on reddit.com
+#Minor tweaks by DementedSnake
+#http://redd.it/2l4wy6
+##Other tweaks by Potaje6
+
+#Set these variables to include to following filetypes.
+AUDIO_FILES="mp3 flac wma midi wav m4a ogg mid midi"
+DOC_FILES="doc docx rtf txt pdf torrent epub ods odt opml xml xls xlsx"
+VIDEO_FILES="flv mp4 avi mpg mpeg mkv mov webm wmv --backup=t ogv"
+DISK_FILES="iso img dmg"
+ARCHIVE_FILES="7zp zip rar 7z bz2 gz lz tar"
+EXECUTABLE_FILES="exe sh jar"
+IMAGE_FILES="jpg bmp png gif"
+#These are links to your folders.
+DOWNLOADS_FOLDER="$HOME/Downloads"
+AUDIO_FOLDER="$HOME/Downloads/Music"
+VIDEO_FOLDER="$HOME/Downloads/Videos"
+DOC_FOLDER="$HOME/Downloads/Documents"
+DISK_FOLDER="$HOME/Downloads/ISOs"
+ARCHIVE_FOLDER="$HOME/Downloads/Archives"
+EXECUTABLE_FOLDER="$HOME/Downloads/Executables"
+IMAGE_FOLDER="$HOME/Downloads/Images"
+SHIT_FOLDER="$HOME/Downloads/Shit"
+
+spaces(){
+    echo "Renaming all files of $DOWNLOADS_FOLDER Recursively with spaces to "_""
+    find $DOWNLOADS_FOLDER -name "* *" -type f -mmin '+10' | rename 's/ /_/g'
+}
+
+print_uso() {
+    cat <<EOF
+    Script para ordenar la carpeta de descargas en subcarpetas
+    movera de $DOWNLOADS_FOLDER:
+    ficheros $AUDIO_FILES a $AUDIO_FOLDER
+    ficheros $DOC_FILES a $VIDEO_FOLDER
+    ficheros $VIDEO_FILES a $DOC_FOLDER
+    ficheros $DISK_FILES a $DISK_FOLDER
+    ficheros $ARCHIVE_FILES a $ARCHIVE_FOLDER
+    ficheros $EXECUTABLE_FILES a $EXECUTABLE_FOLDER
+    ficheros $IMAGE_FILES a $IMAGE_FOLDER
+    Y lo demas a SHIT_FOLDER
+
+EOF
+}
+
+
+
+
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-r") spaces
+            exit 
+        shift
+;;
+        "-h") print_uso
+        exit
+;;
+#        "-h") SALTO=$2
+#        shift
+#;;
+#        "-u") USUARIO=$2
+#        shift
+#;;
+#        "-s") INTERMEDIARIO=$2
+#        shift
+#;;
+#        "-list") LISTA=1
+#        shift
+#;;
+#        "-o") OMITIR=1
+#        shift
+#;;
+        *)
+        shift
+esac
+done
+
+#This line searches the Download folder, following symlinks, but to maximum depth of 1 (itself). It'll return the list of files and exclude anything that's been modified in the past then minutes. This is so files being worked on or downloaded are not interrupted.
+#find -L ${DOWNLOADS_FOLDER} -maxdepth 1 -type f -mmin '+10' | while read line; do
+find -L ${DOWNLOADS_FOLDER} -maxdepth 1 -type f | while read line; do
+    EXT="$(echo $line| rev | cut -d "." -f1 | rev)"
+#Each "if" section looks for and sorts a set of filetypes into a specifically folder. One per folder/set.
+    if [ ! -z "$(echo ${AUDIO_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${AUDIO_FOLDER}"
+        mv --backup=t "${line}" "${AUDIO_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${DOC_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${DOC_FOLDER}"
+        mv --backup=t "${line}" "${DOC_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${VIDEO_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${VIDEO_FOLDER}"
+        mv --backup=t "${line}" "${VIDEO_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${DISK_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${DISK_FOLDER}"
+        mv --backup=t "${line}" "${DISK_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${ARCHIVE_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${ARCHIVE_FOLDER}"
+        mv --backup=t "${line}" "${ARCHIVE_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${EXECUTABLE_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${EXECUTABLE_FOLDER}"
+        mv --backup=t "${line}" "${EXECUTABLE_FOLDER}"
+        continue
+    fi
+    if [ ! -z "$(echo ${IMAGE_FILES} | grep ${EXT})" ]; then
+        echo "Moviendo" "${line}" " A " "${IMAGE_FOLDER}"
+        mv --backup=t "${line}" "${IMAGE_FOLDER}"
+        continue
+    fi
+        echo "Moviendo" "${line}" " A " "${SHIT_FOLDER}"
+        mv --backup=t "${line}" "${SHIT_FOLDER}"
+done
+
+

@@ -1,0 +1,81 @@
+#!/bin/ksh
+##Daniel Molina
+##Script para hacer recordatorios por consola
+
+export DISPLAY=:0
+BASEDIR=$(dirname "$0")
+AGENDA=$BASEDIR/parametros/agenda
+#FECHA=$(date +%Y-%m-%d/%H:%M)
+FECHA=$(date +%Y%m%d%H%M)
+i=0
+z=0
+LISTA_TAREAS=$(grep -v ^# $AGENDA |sed -e 's/[-\/:]//g')
+PF=-gt
+
+print_uso(){
+cat <<EOF
+Script para hacer recordatorios por todas las consolas para evitar olvidos causados por mi alzheimer
+Usa el fichero en parametros/agenda donde se ejecuta para crear recordatorios
+Usa -a para meterlo al final del fichero
+Con el formato de "2016-08-05/08:38 RECORDATORIO"
+Uso: ./agenda [-n/--now] [-l/--list] [-e/--edit] [-h/--help] [-a/--add] [-f/--future]
+
+
+-n/--now muestra la fecha de ahora con el formato para la lista
+-l/--list lista todas las tareas del fichero que no se hayan realizado/comentado
+-e/--edit edita el fichero de la agenda
+-a/--add
+-f/--future ver las tareas planificadas en el futuro
+-h/--help muestra esta ayuda
+
+EOF
+}
+
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-n"|"--now") date +%Y-%m-%d/%H:%M
+        exit
+;;
+        "-l"|"--list") grep -v ^# $AGENDA 
+        exit
+;;
+        "-h"|"--help") print_uso
+        exit
+;;
+        "-e"|"--edit") vi $AGENDA
+        exit
+;;
+        "-a"|"--add") shift
+        			echo "$@" >> $AGENDA
+        exit
+;;
+        "-f"|"--future") echo "Cambios planificados:"  
+						PF=-lt
+		shift
+						
+;;
+        *) 
+        shift
+esac
+done
+
+
+
+grep -v ^# $AGENDA |sed -e 's/[-\/:]//g' | while read PLANIFICADO[$i] TAREA[$i]; do
+i=$(($i+1))
+done
+
+
+until [ $z -eq $i ] ; do
+	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
+		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
+		beep
+                notify-send "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}"
+                 zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
+	fi
+	#echo ${PLANIFICADO[$z]} ${TAREA[$z]}
+	z=$(($z+1))
+done
+

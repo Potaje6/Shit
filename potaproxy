@@ -1,0 +1,108 @@
+#!/bin/bash
+##edits by Potaje6
+set -e -o pipefail
+trap 'rm -rf -- "$datadir"' EXIT
+
+spinner()
+{
+    local pid=$!
+    local delay=0.1
+    local spinstr='|/-\'
+        while [ -d /proc/$! ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+led-blink()
+{
+    while [ -d /proc/$! ]; do
+    setleds -L +caps < /dev/tty7
+    sleep 0.25
+    setleds -L -caps < /dev/tty7
+    sleep 0.25
+    done
+    setleds -L -caps < /dev/tty7
+
+}
+
+main() {
+    local host
+    local n
+    local ports
+    local browser
+
+    if [[ "${#@}" -ne 1 ]]; then
+        echo "Usage: $(basename "$0") SSH_HOST"
+        exit 1
+    else
+        host="$1"
+    fi
+
+    if command -v chromium-browser > /dev/null; then
+        browser=chromium-browser
+    elif command -v google-chrome > /dev/null; then
+        browser=google-chrome
+    else
+        echo "Could not find Chromium or Chrome."
+        exit 1
+    fi
+
+    # The +1 is just for casting purposes so non-numbers are excluded.
+    ports=$(netstat -tnl | awk -F '[: \t]+' '($5 + 1) > 1023 {print $5}')
+
+    while :; do
+        port=$((RANDOM + 1024))
+        if ! fgrep -w "$port" <<< "$ports"; then
+            echo "Port $port appears to be unused."
+            break
+        elif ((n > 100)); then
+            echo "Could not find unused port."
+            exit 1
+        else
+            let n++
+        fi
+    done
+
+    ssh \
+        -q -f \
+        -o 'ControlMaster no' \
+        -o 'ControlPath /dev/null' \
+        -n -N -D "$port" "$host" 
+    SSH_PID=$(ps -eo pid,comm --sort +start_time | tail -n 5  | awk 'NR==1{print$1}')
+        # Most of the failures that would keep SSH from spinning up usually happen
+    # pretty quickly. A notable exception to this is hostname resolution
+    # failure which can vary wildly depending on DNS servers and DNS
+    # configurations in general.
+    #sleep 0.25
+
+    #if [[ "$(jobs -r)" ]]; then
+    if [ $? -eq 0 ]; then
+        datadir=$(mktemp -d)
+        "$browser" \
+            --no-first-run \
+            --proxy-server="socks5://localhost:$port" \
+            --incognito \
+            --user-data-dir="$datadir" > /dev/null 2>&1 &
+        clear
+        echo "Running proxied $browser with PID $! through $host on port $port"
+        #lucecita de mayus parpadea mientras este up
+        if [ $(whoami) == "root" ]; then
+        led-blink &
+        fi
+        spinner
+        echo "Killing background SSH process..."
+        kill $SSH_PID
+        if [ $? -ne 0 ] ; then
+            echo "ERROR background SSH process not killed..."
+            exit 1
+        fi
+    fi
+}
+
+main "$@"
+

@@ -1,0 +1,83 @@
+#!/bin/ksh
+#Daniel Molina
+##Script para generar ruido, si, generar ruido, a todos nos gusta fastidiar de vez en cuando
+#se podria mejorar mucho, pero al ser tal mierda me es suficiente conque me sangren las orejas
+#11/10 IGN - Would play ksh again
+
+
+##Definicion de variables
+MIERDA=/dev/urandom
+RUIDO=/bin/cat
+#pero que asco que das
+RUIDERA=0
+BUCLE=0
+
+
+print_uso()
+{
+        cat <<EOF
+        Uso: 
+        -r para generar ruido aleatorio constante
+        -f para reproducir el ruido de un fichero
+        -R para reproducir el ruido al reves, doble de poltergeist, doble de suicidio
+        -B para reproducir el ruido en un bucle sin fin hasta que te rayes
+        --faggit para ejecutarlo en segundo plano (bajo tu propia responsabilidad)
+        sin parametros reproduce ruido aleatorio
+
+EOF
+} 
+
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-r") MIERDA=/dev/urandom
+        shift
+;;
+        "-f") MIERDA=$2
+        shift
+;;
+		"-h") print_uso
+			exit 0
+;;
+		"-R") RUIDO=/usr/bin/tac
+			  RUIDERA=1
+			  shift
+;;
+		"-b") BUCLE=1
+			  shift
+;;
+		"--faggit") SEGUNDO_PLANO=1
+			  shift
+;;
+        *)
+        shift
+esac
+done
+
+if [ $RUIDERA -eq 1 ] && [ "$MIERDA" = "/dev/urandom" ]; then
+	echo "Si quieres fliparte tanto tienes que dar por parametro (-f) un fichero"
+	echo "/dev/urandom es demasiado mainstream para ello"
+	exit 0
+fi
+
+
+
+if [ $BUCLE -eq 1 ]; then
+	if [ "$MIERDA" = "/dev/urandom" ]; then
+		echo "Para poner la reproduccion en bucle tienes que pasar por parametro un fichero (-f)"
+		exit 0
+	fi
+	while true ; do $RUIDO $MIERDA | padsp tee /dev/audio > /dev/null 
+	done
+	exit 0
+fi
+
+
+$RUIDO $MIERDA | padsp tee /dev/audio > /dev/null
+
+if [ "$SEGUNDO_PLANO" -eq 1 ]; then
+	$RUIDO $MIERDA | padsp tee /dev/audio > /dev/null &
+fi
+
+exit 0

@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# insult.sh
+# Prints insults, as many as the number specified
+# as the first argument.
+
+if [ $# -eq 0 ]
+        then
+                echo "Please provide no. of insults as an argument."
+        exit
+fi
+
+counter=0
+
+while [ "$counter" -ne "$1" ]
+        do
+               /usr/bin/curl -silent http://randominsults.net | \
+               /bin/grep strong | \
+               /usr/bin/awk -F"<i>" '{print $2}' | \
+               /usr/bin/awk -F"</i>" '{print $1}'
+               counter=$(($counter+1))
+        done

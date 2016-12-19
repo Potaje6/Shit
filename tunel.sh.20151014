@@ -1,0 +1,177 @@
+#!/bin/ksh
+
+### Script para creación y gestión de tuneles SSH
+### 0.1
+### Daniel Molina
+
+MUERTE=0
+LISTA=0
+print_uso()
+{
+        echo "Uso: "
+        echo "Sin parametros de configuracion creara el túnel en el puerto LOCAL 8000"
+        echo "Sin parametros de configuracion creara el túnel en el puerto REMOTO 80"
+        echo "SI que es necesario indicar la maquina de salto del cliente al que saltar"
+        echo "-l puerto local"
+        echo "-r puerto remoto"
+        echo "-h host al que hacer el salto"
+        echo "-s host intermediario del salto"
+        echo "-u usuario de la maquina intermediaria del salto, sin parametros dmolina"
+        echo "Usa el parametro -list para mostrar los tuneles abiertos, con -o para solo usar la funcion de lista"
+        echo "Ejemplo de uso ./tunel.sh -P 8000 -p 80 babanew"
+}
+
+fusilar()
+{
+    echo "tunel:" 
+    ps -ef | grep -v grep| grep -v "/usr/sbin/sshd" | grep "ssh -f -N -L" |awk {'print$12'}
+    echo "numero de proceso:"
+    ps aux | grep -v grep| grep -v "/usr/sbin/sshd" | grep "ssh -f -N -L" |awk {'print$2'}
+}
+if
+[ $# -eq 0 ]
+        then echo "No se han introducido parametros"
+        
+        print_uso
+        exit 3
+else
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-r") REMOTO=$2
+        shift
+;;
+        "-l") LOCAL=$2
+        shift
+;;
+        "-h") SALTO=$2
+        shift
+;;
+        "-u") USUARIO=$2
+        shift
+;;
+        "-s") INTERMEDIARIO=$2
+        shift
+;;
+        "-list") LISTA=1
+        shift
+;;
+        "-o") OMITIR=1
+        shift
+;;
+        *)
+        shift
+esac
+done
+fi
+### Comprobacion de parametros
+if [ -z $OMITIR ]
+then
+
+if [ -z $REMOTO ]
+        then 
+        echo "No se ha dado un puerto REMOTO por parametro, usando el puerto 80..."
+        REMOTO=80
+fi
+
+if [ -z $LOCAL ]
+        then echo "No se ha dado un puerto LOCAL por remoto, usando el puerto 8000"
+        LOCAL=8000
+fi
+
+if [ -z $USUARIO ]
+        then echo "No se ha dado un usuario por parametro, usando dmolina"
+        USUARIO=dmolina
+fi
+
+if [ -z $INTERMEDIARIO ]
+        then echo "No se ha dado una maquina intermediaria por parametro, usando teruel"
+        INTERMEDIARIO=teruel
+fi
+
+if [ -z $SALTO ]
+                then echo "No se ha dado una máquina de salto, saliendo..."
+                exit 3
+fi
+
+fi
+
+
+
+
+
+
+## sustituir dmolina por nombre de usuario
+if [ -z $OMITIR ]
+then
+ssh -f -N -L $LOCAL:$SALTO:$REMOTO $USUARIO@$INTERMEDIARIO
+ while [ $? -ne 0 ];
+    do 
+    echo "Contraseña erronea, vuelva a introducirla:"
+    ssh -f -N -L $LOCAL:$SALTO:$REMOTO $USUARIO@$INTERMEDIARIO
+    done
+echo "Tunel: " $LOCAL":"$SALTO":"$REMOTO  a través de $USUARIO@$INTERMEDIARIO
+fi
+
+
+## Listar y preguntar si quieres matar procesos
+
+
+ABIERTOS=`ps -ef | grep -v grep| grep -v "/usr/sbin/sshd" | grep "ssh -f -N -L" |awk {'print$12'}`
+if [ $LISTA -eq 1 ]
+        then
+            if [ -z $ABIERTOS ]
+                then
+                echo "No hay tuneles abiertos"
+                exit 0
+                else
+                fusilar
+                echo "Quieres matar un proceso? (S/N)..."
+                read "MATAR2"
+                until [ "$MATAR2" = "N" -o "$MATAR2" = "S" ];
+                do
+                  echo "Parametro invalido, vuelve a introducirlo"
+                  echo "Quieres matar un proceso? (S/N)..." 
+                  read MATAR2
+                done
+                if [ $MATAR2 = "N" ]     
+                then
+                echo "Saliendo" 
+                exit 0
+                else 
+                    while [ -n $ABIERTOS ];
+                    do
+                        if [ "$MATAR2" = "S" ]
+                        then 
+                            echo "Cual quieres matar?"
+                            echo "OJO!! ASEGURATE DE QUE METES BIEN EL NUMERO DE PROCESO!!!"
+                            echo "NO HAY COMPROBACIONES POR SI TE EQUIVOCAS!!!"
+                            fusilar
+                            echo 
+                            read MATANZA
+                            while [ -z "$MATANZA" ];
+                            do 
+                            echo "Tienes que introducir un numero de tunel a cerrar"
+                            read MATANZA
+                            done
+                            kill $MATANZA
+                            echo "proceso " $MATANZA " matado"
+                        else 
+                            exit 0
+                        fi
+                        ABIERTOS=`ps -ef | grep -v grep| grep -v "/usr/sbin/sshd" | grep "ssh -f -N -L" |awk {'print$12'}`
+                            if [ -z $ABIERTOS ]
+                            then 
+                            echo "Todos los tuneles cerrados"
+                            exit 0
+                            else 
+                            echo "quieres cerrar otro tunel? (S/cualquier otra cosa para salir)"
+                            read MATAR2
+                            fi
+                    done
+                fi
+
+fi
+fi
+echo "Saliendo..."
+exit 0
