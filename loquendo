@@ -1,0 +1,8 @@
+#!/bin/bash
+url=http://webzhao.com/d
+function say {
+    for word in $@; do
+        curl $url/${word:0:1}/$word.mp3 | mplayer -cache 1024 -quiet -
+    done
+}
+say $@

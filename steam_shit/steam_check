@@ -1,0 +1,150 @@
+#!/bin/ksh
+##Script monitoring precios steam
+
+MAILTO=molinawp@gmail.com
+GAMES=
+PRICES_DEFAULT=/root/steam_shit/history
+LOG_FILE=/root/steam_shit/log
+NOSPAM_PLS=3
+
+
+
+trap force_exit SIGINT
+
+
+force_exit(){
+        echo 
+        echo "Deleting temp file"
+        rm -r /var/tmp/$app_number.$$
+        exit 3
+}
+
+
+print_uso(){
+
+    cat <<EOF
+    Usage: 
+    ./steam_check -m mail@shit.crap $STEAM_APP_ID1 $STEAM_APP_ID2 $STEAM_APP_ID1
+    Ex. ./steam_check -m mail@shit.crap 387290
+    -m mail to send notifications
+    -d days between notification
+EOF
+exit
+
+
+}
+
+
+if
+[ $# -eq 0 ]
+        then echo "No se han introducido parametros"
+        print_uso
+        exit 3
+else
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-m") MAILTO=$2
+        shift
+        shift
+;;
+        "-d") NOSPAM_PLS=$2
+        shift
+        shift
+;;
+        "-h") print_uso
+        exit
+;;
+        *)
+                GAMES=$(echo "$1 $GAMES")
+        shift
+esac
+done
+fi
+
+######vTHIS SHITv######
+get_price(){
+APP_PAGE=/var/tmp/$app_number.$$
+wget -q --load-cookies /root/steam_shit/cookie  http://store.steampowered.com/app/$app_number -O $APP_PAGE
+PRICE_NOW=$(grep -w '<meta itemprop="price" content=' $APP_PAGE | tr -d [:alpha:] | tr -d [:blank:] | tr -d [:punct:] | tr -d [:blank:] | tr -d [:cntrl:])
+GAME_NAME="$(grep '<div class="apphub_AppName">' $APP_PAGE | tr -s [:blank:] | sed 's/<div class="apphub_AppName">//' | sed 's/<\/div>//')"
+rm $APP_PAGE
+}
+######^THIS SHIT^######
+
+
+MAIN(){
+for app_number in $(echo $GAMES)
+do
+get_price
+
+if [ -z $PRICE_NOW ]; then
+    echo "Error, couldnt get price for $app_number"
+    continue
+else
+
+grep $app_number $PRICES_DEFAULT > /dev/null
+
+if [ $? -ne 0 ]; then
+      echo "Price unknown, saving price $PRICE_NOW for app number $app_number"
+        echo "$app_number $PRICE_NOW" >> $PRICES_DEFAULT
+fi
+
+
+
+
+APP_CODE=$(grep $app_number $PRICES_DEFAULT | cut -d " " -f1)
+PRICE_OLD=$(grep $app_number $PRICES_DEFAULT | cut -d " " -f2)
+NOTIFIED=$(grep $app_number $PRICES_DEFAULT | cut -d " " -f3)
+
+
+if [ ! -z "$NOTIFIED" ] ; then
+if [ "$NOTIFIED" -ge $(date +%Y%m%d%H%M) ]; then
+    continue
+else
+sed -i "s/$app_number $PRICE_OLD $NOTIFIED/$app_number $PRICE_OLD/" $PRICES_DEFAULT
+fi
+fi
+
+RESULT=$(echo "$PRICE_OLD > $PRICE_NOW" | bc)
+
+if [ "$RESULT" -eq 1 ]; then
+    echo "$GAME_NAME - $APP_CODE on sale for $PRICE_NOW at $(date +%Y/%m/%d--%H:%M:%S)" >> $LOG_FILE
+fi
+
+
+if [ ! -z "$NOTIFIED" ] ; then
+if [ "$NOTIFIED" -ge $(date +%Y%m%d%H%M) ]; then
+        exit
+else
+sed -i "s/$app_number $PRICE_OLD $NOTIFIED/$app_number $PRICE_OLD$/" $PRICES_DEFAULT
+fi
+fi
+
+
+if [ "$RESULT" -eq 1 ]; then
+        cat <<SACABO | mailx -s "$GAME_NAME is on SALE ${PRICE_NOW}€" $MAILTO
+
+        ALERT!!! $GAME_NAME is on SALE  => ${PRICE_NOW}€ at $(date +%Y/%m/%d--%H:%M:%S)
+        Check it at: http://store.steampowered.com/app/$app_number
+
+
+
+        NOW DO SOMETHING USEFUL SCUM!
+        You can forget about notifications for this piece of shit until $(date --date="$NOSPAM_PLS days" +%Y/%m/%d--%H:%M)
+
+SACABO
+##flag as notified
+sed -i "s/$app_number $PRICE_OLD$/$app_number $PRICE_OLD $(date --date="$NOSPAM_PLS days" +%Y%m%d%H%M)/" $PRICES_DEFAULT
+
+
+fi
+fi
+done
+
+}
+
+
+MAIN
+
+

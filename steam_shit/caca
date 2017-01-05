@@ -1,0 +1,577 @@
+									<a class="popup_menu_item" href="http://store.steampowered.com/app/353370/?snr=1_7_7_ut1_12">
+										Steam Controller									</a>
+									<a class="popup_menu_item" href="http://store.steampowered.com/app/353380/?snr=1_7_7_ut1_12">
+										Steam Link									</a>
+									<a class="popup_menu_item" href="http://store.steampowered.com/hardware/?snr=1_7_7_ut1_12#Machines">
+										Steam Machines									</a>
+									<a class="popup_menu_item" href="http://store.steampowered.com/app/358040/?snr=1_7_7_ut1_12">
+										HTC Vive									</a>
+								</div>
+							</div>
+
+							<a class="tab  " href="http://store.steampowered.com/videos/?snr=1_7_7_ut1_12">
+								<span>Videos</span>
+							</a>
+
+							<a class="tab  " href="http://store.steampowered.com/news/?snr=1_7_7_ut1_12">
+								<span>News</span>
+							</a>
+
+							<div class="search_area">
+								<div id="store_search">
+									<form id="searchform" name="searchform" method="get" action="http://store.steampowered.com/search/" onsubmit="return SearchSuggestCheckTerm(this);">
+										<input type="hidden" name="snr" value="1_7_7_ut1_12" >
+										<div class="searchbox">
+											<input id="store_nav_search_term" name="term" type="text" class="default" value="search the store" size="22" autocomplete="off">
+											<a href="#" id="store_search_link" onclick="var $Form = $J(this).parents('form'); $Form.submit(); return false;"><img src="http://store.akamai.steamstatic.com/public/images/blank.gif"></a>
+										</div>
+--
+							<a href="http://store.steampowered.com/app/4000/?snr=1_7_7_ut1_150_1"  data-ds-appid="4000"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:4000,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/4000/capsule_sm_120.jpg?t=1478562816"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Garry's Mod</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">29 Nov, 2006</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;95% of the 263,599 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/391540/?snr=1_7_7_ut1_150_1"  data-ds-appid="391540"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:391540,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/391540/capsule_sm_120.jpg?t=1478073703"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Undertale</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">15 Sep, 2015</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 72,361 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/205100/?snr=1_7_7_ut1_150_1"  data-ds-appid="205100"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:205100,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/205100/capsule_sm_120.jpg?t=1478192981"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Dishonored</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">11 Oct, 2012</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 29,007 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/105600/?snr=1_7_7_ut1_150_1"  data-ds-appid="105600"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:105600,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/105600/capsule_sm_120.jpg?t=1479397782"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Terraria</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">16 May, 2011</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 164,760 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/400/?snr=1_7_7_ut1_150_1"  data-ds-appid="400"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:400,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/400/capsule_sm_120.jpg?t=1447890222"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Portal</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">10 Oct, 2007</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;98% of the 31,295 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/33230/?snr=1_7_7_ut1_150_1"  data-ds-appid="33230"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:33230,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/33230/capsule_sm_120.jpg?t=1452180469"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Assassin's Creed 2 Deluxe Edition</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">4 Mar, 2010</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Very Positive&lt;br&gt;83% of the 9,846 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/239030/?snr=1_7_7_ut1_150_1"  data-ds-appid="239030"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:239030,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/239030/capsule_sm_120.jpg?t=1447357886"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Papers, Please</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">8 Aug, 2013</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 17,998 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								8,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/405640/?snr=1_7_7_ut1_150_1"  data-ds-appid="405640"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:405640,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/405640/capsule_sm_120.jpg?t=1473699104"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Pony Island</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">4 Jan, 2016</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 4,950 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								4,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/32460/?snr=1_7_7_ut1_150_1"  data-ds-appid="32460"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:32460,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/32460/capsule_sm_120.jpg?t=1479339279"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Monkey Island™ 2 Special Edition: LeChuck’s Revenge™</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">7 Jul, 2010</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 837 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/32360/?snr=1_7_7_ut1_150_1"  data-ds-appid="32360"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:32360,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/32360/capsule_sm_120.jpg?t=1463681082"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">The Secret of Monkey Island: Special Edition</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">15 Jul, 2009</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 1,524 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/220/?snr=1_7_7_ut1_150_1"  data-ds-appid="220"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:220,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/220/capsule_sm_120.jpg?t=1456860366"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Half-Life 2</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">16 Nov, 2004</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 42,846 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/10/?snr=1_7_7_ut1_150_1"  data-ds-appid="10"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:10,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/10/capsule_sm_120.jpg?t=1447887426"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Counter-Strike</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">1 Nov, 2000</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 78,235 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/70/?snr=1_7_7_ut1_150_1"  data-ds-appid="70"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:70,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/70/capsule_sm_120.jpg?t=1447890508"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Half-Life</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">19 Nov, 1998</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 15,368 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/266410/?snr=1_7_7_ut1_150_1"  data-ds-appid="266410"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:266410,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/266410/capsule_sm_120.jpg?t=1478025589"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">iRacing</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img hmd_separator"></span><span title="HTC Vive" class="platform_img htcvive"></span><span title="Oculus Rift" class="platform_img oculusrift"></span><span title="OSVR" class="platform_img razerosvr"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">12 Jan, 2015</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Very Positive&lt;br&gt;84% of the 276 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/428550/?snr=1_7_7_ut1_150_1"  data-ds-appid="428550"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:428550,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/428550/capsule_sm_120.jpg?t=1482288740"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Momodora: Reverie Under the Moonlight</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">4 Mar, 2016</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 2,152 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/360740/?snr=1_7_7_ut1_150_1"  data-ds-appid="360740"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:360740,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/360740/capsule_sm_120.jpg?t=1447371940"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Downwell</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">15 Oct, 2015</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 2,817 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								2,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/264200/?snr=1_7_7_ut1_150_1"  data-ds-appid="264200"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:264200,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/264200/capsule_sm_120.jpg?t=1447359435"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">One Finger Death Punch</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">3 Mar, 2014</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;98% of the 10,786 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								4,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/219150/?snr=1_7_7_ut1_150_1"  data-ds-appid="219150"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:219150,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/219150/capsule_sm_120.jpg?t=1447356500"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Hotline Miami</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">23 Oct, 2012</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 34,288 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								8,49€							</div>
+--
+							<a href="http://store.steampowered.com/app/335670/?snr=1_7_7_ut1_150_1"  data-ds-appid="335670"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:335670,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/335670/capsule_sm_120.jpg?t=1447365528"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">LISA</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">15 Dec, 2014</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;95% of the 4,445 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/206440/?snr=1_7_7_ut1_150_1"  data-ds-appid="206440"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:206440,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/206440/capsule_sm_120.jpg?t=1483409209"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">To the Moon</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">7 Sep, 2012</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 26,795 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								7,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/425580/?snr=1_7_7_ut1_150_1"  data-ds-appid="425580"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:425580,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/425580/capsule_sm_120.jpg?t=1467809019"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">The Room Two</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">5 Jul, 2016</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;98% of the 2,133 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								4,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/13240/?snr=1_7_7_ut1_150_1"  data-ds-appid="13240"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:13240,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/13240/capsule_sm_120.jpg?t=1447351268"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Unreal Tournament: Game of the Year Edition</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">17 Mar, 2008</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;97% of the 1,437 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/22380/?snr=1_7_7_ut1_150_1"  data-ds-appid="22380"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:22380,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/22380/capsule_sm_120.jpg?t=1447352938"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Fallout: New Vegas</span>
+							<p>
+								<span class="platform_img win"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">19 Oct, 2010</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;95% of the 43,598 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/420/?snr=1_7_7_ut1_150_1"  data-ds-appid="420"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:420,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/420/capsule_sm_120.jpg?t=1456867684"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Half-Life 2: Episode Two</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img mac"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">10 Oct, 2007</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 8,765 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								7,99€							</div>
+--
+							<a href="http://store.steampowered.com/app/55230/?snr=1_7_7_ut1_150_1"  data-ds-appid="55230"onmouseover="GameHover( this, event, 'global_hover', {&quot;type&quot;:&quot;app&quot;,&quot;id&quot;:55230,&quot;public&quot;:1,&quot;v6&quot;:1} );" onmouseout="HideGameHover( this, event, 'global_hover' )" class="search_result_row ds_collapse_flag" >
+					<div class="col search_capsule"><img src="http://cdn.akamai.steamstatic.com/steam/apps/55230/capsule_sm_120.jpg?t=1479199101"></div>
+					<div class="responsive_search_name_combined">
+						<div class="col search_name ellipsis">
+							<span class="title">Saints Row: The Third</span>
+							<p>
+								<span class="platform_img win"></span><span class="platform_img linux"></span>							</p>
+						</div>
+						<div class="col search_released responsive_secondrow">14 Nov, 2011</div>
+						<div class="col search_reviewscore responsive_secondrow">
+															<span class="search_review_summary positive" data-store-tooltip="Overwhelmingly Positive&lt;br&gt;96% of the 31,768 user reviews for this game are positive.">
+								</span>
+													</div>
+
+
+						<div class="col search_price_discount_combined responsive_secondrow">
+							<div class="col search_discount responsive_secondrow">
+								
+							</div>
+							<div class="col search_price  responsive_secondrow">
+								9,99€							</div>

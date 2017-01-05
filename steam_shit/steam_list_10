@@ -1,0 +1,101 @@
+#!/bin/ksh
+
+KEYMAP="de-latin1-nodeadkeys euro3"
+LC_ADDRESS=es_ES.UTF-8
+LC_MONETARY=es_ES.UTF-8
+LC_NUMERIC=es_ES.UTF-8
+LANG=en_US.UTF-8
+LC_MEASUREMENT=es_ES.UTF-8
+PROG_NAME=$(basename "$0")
+#TEMPFILE=/var/tmp/${PROG_NAME}.$$
+MAILFILE=/var/tmp/${PROG_NAME}.mail.$$
+TEMPFILE_WGET=/var/tmp/${PROG_NAME}.$$.$(echo $RANDOM)
+TEMPFILE_GAMES=/var/tmp/${PROG_NAME}.$$.$(echo $RANDOM)
+PRICE_MODE=5
+
+
+if
+[ $# -eq 0 ]
+        then echo "No se han introducido parametros"
+        exit 3
+else
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-m") MAILTO=$2
+        shift
+;;
+        "-p") PRICE_MODE=$2
+        shift
+;;
+        *)
+        shift
+esac
+done
+fi
+
+
+
+
+if [ $PRICE_MODE -eq 5 ]; then
+wget -q -O $TEMPFILE_WGET "http://store.steampowered.com/search/?filter=ut2&category1=998&os="
+grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
+cat <<EOF >> $MAILFILE
+
+Daily mail of Steam list of shit cheaper than 5 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
+http://store.steampowered.com/search/?filter=ut2&category1=998&os=
+
+
+EOF
+fi
+
+if [ $PRICE_MODE -eq 10 ]; then
+wget -q -O $TEMPFILE_WGET "http://store.steampowered.com/search/?filter=ut1&category1=998&os="
+grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
+cat <<EOF >> $MAILFILE
+
+Daily mail of Steam list of shit cheaper than 10 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
+http://store.steampowered.com/search/?filter=ut1&category1=998&os=
+
+EOF
+fi
+
+
+grep -n ^-- $TEMPFILE_GAMES | awk -F ":" '{print $1}' |\
+while read LINE ; do
+APP_FILE=/var/tmp/${PROG_NAME}.APP.$(echo $RANDOM)
+LINE=$(expr $LINE + 1)
+END=$(expr $LINE + 21)
+sed -n ${LINE},${END}p $TEMPFILE_GAMES > $APP_FILE
+
+
+
+
+
+APP_TITLE=$(grep -o -P '(?<=\<span class=\"title\"\>).*(?=\<\/span\>)' $APP_FILE )
+APP_PRICE=$(grep -o -P '(?<=\<\/strike\>\<\/span\>\<br\>).*(?=<\/div>)' $APP_FILE)
+if [ -z $APP_PRICE ] ; then
+APP_PRICE=$(sed -n 21p $APP_FILE | tr -d [:blank:] | sed 's/€<\/div>//')
+fi
+APP_LINK=$(grep -o -P '(?<=\<a href=").*(?=\/\?\/?snr=1_7_7_ut2_150_1)' $APP_FILE )
+if [ $PRICE_MODE -eq 10 ]; then
+APP_LINK=$(grep -o -P '(?<=\<a href=").*(?=\/\?\/?snr=1_7_7_ut1_150_1)' $APP_FILE )
+fi
+
+#echo $(grep -o -P '(?<=\<a href=").*(?=\"\ \ data-ds-appid)') >> $MAILFILE
+
+echo "$APP_TITLE => $APP_PRICE" >> $MAILFILE
+echo "$APP_LINK" >> $MAILFILE
+echo "\
+" >> $MAILFILE
+rm $APP_FILE
+
+done
+
+cat $MAILFILE | mailx -s "[Daily Steam] Games list under $PRICE_MODE bucks" $MAILTO
+
+
+
+rm $TEMPFILE $MAILFILE $TEMPFILE_GAMES $TEMPFILE_WGET
+
+
