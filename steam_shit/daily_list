@@ -53,7 +53,7 @@ grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
 cat <<EOF >> $MAILFILE
 
 Daily mail of Steam list of shit cheaper than 5 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
-http://store.steampowered.com/search/?filter=ut2&category1=998&os=
+http://store.steampowered.com/search/?filter=ut2
 
 
 EOF
@@ -65,7 +65,7 @@ grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
 cat <<EOF >> $MAILFILE
 
 Daily mail of Steam list of shit cheaper than 10 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
-http://store.steampowered.com/search/?filter=ut1&category1=998&os=
+http://store.steampowered.com/search/?filter=ut1
 
 EOF
 fi
@@ -103,20 +103,24 @@ rm $APP_FILE
 done
 
 case $MODE in
-	"mail" )
-			cat $MAILFILE | mailx -s "[Daily Steam] Games list under $PRICE_MODE bucks" $MAILTO
-		;;
-	"telegram" )
-			cat $MAILFILE | while read grasa ; do echo "$grasa" | /root/telegram_bot -187585967 ; done
-		;;
-	* )
-		exit
+        "mail" )
+                        cat $MAILFILE | mailx -s "[Daily Steam] Games list under $PRICE_MODE bucks" $MAILTO
+                ;;
+        "telegram" )
+                        sed -i ':a;N;$!ba;s/\n/%0D%0A/g' $MAILFILE
+                        sed -i 's/\&/ /g' $MAILFILE
+                        cat $MAILFILE | /root/telegram_bot -187585967
+                ;;
+        * )
+                exit
 esac
 
 
 
 
-rm $TEMPFILE $MAILFILE $TEMPFILE_GAMES $TEMPFILE_WGET
+#rm $TEMPFILE $MAILFILE $TEMPFILE_GAMES $TEMPFILE_WGET
+
+
 
 
 

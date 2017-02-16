@@ -1,10 +1,11 @@
 #!/bin/ksh
 ##Script monitoring precios steam
 
+EXEC_DIR=$(dirname $0)
 MAILTO=molinawp@gmail.com
 GAMES=
-PRICES_DEFAULT=/root/steam_shit/history
-LOG_FILE=/root/steam_shit/log
+PRICES_DEFAULT=$EXEC_DIR/history
+LOG_FILE=$EXEC_DIR/log
 NOSPAM_PLS=3
 
 
@@ -15,7 +16,7 @@ trap force_exit SIGINT
 force_exit(){
         echo 
         echo "Deleting temp file"
-        rm -r /var/tmp/$app_number.$$
+    rm $APP_PAGE
         exit 3
 }
 
@@ -65,12 +66,17 @@ fi
 ######vTHIS SHITv######
 get_price(){
 APP_PAGE=/var/tmp/$app_number.$$
-wget -q --load-cookies /root/steam_shit/cookie  http://store.steampowered.com/app/$app_number -O $APP_PAGE
+wget -q --load-cookies $EXEC_DIR/cookie  http://store.steampowered.com/app/$app_number -O $APP_PAGE
 PRICE_NOW=$(grep -w '<meta itemprop="price" content=' $APP_PAGE | tr -d [:alpha:] | tr -d [:blank:] | tr -d [:punct:] | tr -d [:blank:] | tr -d [:cntrl:])
+if [ -z $PRICE_NOW ]; then
+PRICE_NOW=$(grep  '<div class="discount_final_price">' $APP_PAGE | tr -d [:alpha:] | tr -d [:blank:] | tr -d [:punct:] | tr -d [:blank:])
+PRICE_NOW=$(echo ${PRICE_NOW::-2})
+fi
 GAME_NAME="$(grep '<div class="apphub_AppName">' $APP_PAGE | tr -s [:blank:] | sed 's/<div class="apphub_AppName">//' | sed 's/<\/div>//')"
-rm $APP_PAGE
+#rm $APP_PAGE
 }
 ######^THIS SHIT^######
+
 
 
 MAIN(){
@@ -125,7 +131,7 @@ fi
 if [ "$RESULT" -eq 1 ]; then
         cat <<SACABO | mailx -s "$GAME_NAME is on SALE ${PRICE_NOW}€" $MAILTO
 
-        ALERT!!! $GAME_NAME is on SALE  => ${PRICE_NOW}€ at $(date +%Y/%m/%d--%H:%M:%S)
+        ALERT!!! $GAME_NAME is on SALE  => ${PRICE_NOW}€ at $(date +%Y/%m/%d--%H%:M:%S)
         Check it at: http://store.steampowered.com/app/$app_number
 
 
@@ -146,5 +152,3 @@ done
 
 
 MAIN
-
-
