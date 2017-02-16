@@ -48,6 +48,10 @@ do
         exit
 ;;
         "-a"|"--add") shift
+                    if [ -z $@ ]; then
+                    echo "No argument given"
+                    exit
+                    fi 
         			echo "$@" >> $AGENDA
         exit
 ;;
@@ -70,7 +74,7 @@ done
 
 until [ $z -eq $i ] ; do
 	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
-		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
+#		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
 		beep
                 notify-send "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}"
                  zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null

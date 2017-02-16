@@ -16,7 +16,7 @@ trap force_exit SIGINT
 force_exit(){
         echo 
         echo "Deleting temp folder"
-        rm -rf $BACKUPFULLDIR/temp        
+        rm -rvf $BACKUPFULLDIR/temp        
         exit 3
 }
 
@@ -137,3 +137,5 @@ echo "$(date $HORA)--------backup creado de $LUSER@$HOST:$SOURCE $BACKUPTARFILE"
 
 
 purge_backups
+
+aromeroe,ejmartinezi,fbeltran,fhernandez,jfaure,jrucio,lmuzas,maclavero,malcantara,mdefrancisco,bancodedatos,acabanillas,atorrijopa,mbortiz,jsendra,fmiralles,cbona,cartiga,ahernandezj,miureta,lortun,mperezgara,amula,myperezu,ohernandezm,asupervia,eromeroj,moro,scallao,jlclavero,mamunnoz,pabrotons,ynunnez,magarciamar,bfernandezca,jlburrel,aiperezmo,ammalom,dguzman,aberga,ngarcias,jerce,rpereza,yfranco

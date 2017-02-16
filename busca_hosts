@@ -12,9 +12,9 @@ trap force_exit SIGINT
 
 
 force_exit(){
-	echo 
-	echo "Exiting..."
-	exit 3
+        echo 
+        echo "Exiting..."
+        exit 3
 }
 
 print_uso(){
@@ -60,6 +60,11 @@ echo "$i = ${bold}$MAQUINA${normal}"
 
 case $i in
 0) echo "Not found"
+        nc -w 1 -z $1 22 > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            echo "${bold}$1${normal} exist, sshing"
+            ssh $DEBUG -l $LUSER $1
+        fi
         exit 
 ;;      
 1) echo "${bold}${MAQUINA[$i]}${normal} ${bold}FOUND${normal}"
@@ -99,3 +104,4 @@ echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} -
 
 esac
 exit
+

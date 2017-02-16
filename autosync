@@ -31,7 +31,7 @@ fi
 
 echo $$ > $HOME/.ACTIVO
 
-ls $HOME/.ACTIVO > /dev/null  2>&1
+test -f $HOME/.ACTIVO > /dev/null  2>&1
 ACTIVE=$?
 
 while [ $ACTIVE -eq 0 ]; do
