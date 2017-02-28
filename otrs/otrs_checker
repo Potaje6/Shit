@@ -1,0 +1,109 @@
+#!/bin/ksh
+##Daniel Molina 
+##Script para revisar nuevos tickets en el OTRS y sacar una notificacion por cada 1 nuevo
+
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+TEMPFILE=/var/tmp/$EXEC_NAME.$$
+HISTORY=$EXEC_DIR/history
+NOTIF_SOUND=$EXEC_DIR/dspldeth.wav
+ICO=$EXEC_DIR/ast.jpeg
+COOKIE=$EXEC_DIR/cookie
+USER=dmolinao@ext.aragon.es
+LOCK_FILE=$EXEC_DIR/$EXEC_NAME.lock
+TELEGRAM_BOT=/home/dmolinao/scripts/otrs/telegram_bot
+export DISPLAY=:0
+
+
+test -f $EXEC_DIR/pass
+if [ $? -ne 0 ]; then
+	echo "password file $EXEC_DIR/pass not found"
+fi
+
+trap force_exit SIGINT SIGTERM
+
+clean_shit(){
+	rm -f $LOCK_FILE
+	rm -f $TEMPFILE
+	rm -f $COOKIE
+
+}
+
+
+force_exit(){
+        rm -f $LOCK_FILE
+        rm -f $TEMPFILE
+		rm -f $COOKIE
+        exit 
+}
+
+test -f $LOCK_FILE
+
+if [ $? -eq 0 ]; then
+	exit
+fi
+
+##Fich bloqueo
+echo $$ > $LOCK_FILE
+PROC=$(cat $LOCK_FILE)
+
+#curl -s -q -k -b $1 -o $TEMPFILE https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked
+
+curl --connect-timeout 5 -k -c $COOKIE -o /dev/null https://cau.aragon.es/index.pl 2> /dev/null
+
+if [ $? -ne 0 ]; then
+	force_exit
+fi
+curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -d 'Action=Login' -d 'Lang=es' -d 'RequestedURL=' -d 'TimeOffset=-60' -d "User=$USER" -d Password=$(cat $EXEC_DIR/pass) -o /dev/null https://cau.aragon.es/index.pl 2> /dev/null
+
+#bucle para evitar overflood de sesiones
+while [ $PROC -eq $$ ] ; do
+curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE "https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked" 2> /dev/null
+if [ $? -ne 0 ]; then
+	force_exit
+fi
+
+
+
+if [ $(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l) -ne 2 ] ; then
+#	rm $TEMPFILE
+#	rm $COOKIE
+#	rm $LOCK_FILE
+#	exit
+	rm $TEMPFILE
+	sleep 60
+	continue
+fi
+
+UP=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1)
+DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2)
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | while read TICKET_SUBJECT ; do
+TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "TicketID=\w*" | sed 's/TicketID=//')
+	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
+	if [ $? -eq 0 ]; then
+		continue
+	fi
+##Notificaciones por telegram a grupo NLG_DGA
+#	echo "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" | $TELEGRAM_BOT -200650011
+	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
+	paplay $NOTIF_SOUND
+	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
+done
+
+rm $TEMPFILE
+sleep 60
+PROC=$(cat $LOCK_FILE)
+if [ -z $PROC ]; then
+	exit
+fi
+
+#fin bucle para evitar overflood de sesiones
+done
+
+#salida
+rm $TEMPFILE
+rm $COOKIE
+rm $LOCK_FILE
+
+exit
+
