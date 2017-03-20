@@ -6,6 +6,7 @@ x=1
 bold=$(tput bold)
 normal=$(tput sgr0)
 HORA=+%Y-%m-%d--%H:%M:%S
+LOG_FILE=$HOME/logs/connections
 
 ##Captura de salida
 trap force_exit SIGINT
@@ -21,6 +22,7 @@ print_uso(){
 cat <<EOF
         Usage:
         ./script [-h|-v|-u|-r] trozo_nombre_conocido_de_maquina
+        This shit logs all ur activity for the NSA in $LOG_FILE
 EOF
 exit
 }
@@ -56,13 +58,13 @@ while read MAQUINA ; do
 i=$(($i+1))
 MAQUINA[$i]=$MAQUINA
 echo "$i = ${bold}$MAQUINA${normal}"
-; done
+done
 
 case $i in
-0) echo "Not found"
-        nc -w 1 -z $1 22 > /dev/null 2>&1
+0) echo "Not found in list"
+        nc -w 3 -z $1 22 > /dev/null 2>&1
         if [ $? -eq 0 ]; then
-            echo "${bold}$1${normal} exist, sshing"
+            echo "${bold}$1${normal} exist and got 22 open"
             ssh $DEBUG -l $LUSER $1
         fi
         exit 
@@ -95,10 +97,10 @@ fi
 
 
 
-echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $HOME/logs/connections
+echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $LOG_FILE
 ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$(echo $?)
-echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS" >> $HOME/logs/connections
+echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS" >> $LOG_FILE
 
 ;;
 

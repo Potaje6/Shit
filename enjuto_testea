@@ -1,8 +1,14 @@
 #!/bin/ksh
 ##Script para que salga el grito NOOOOOOOO de enjuto mojamuto cuando no llegue a X
 
-
+##Declare vars
 LOCKFILE=$HOME/.ENJUTO
+NOOOO=/home/dmolinao/scripts/parametros/Enjuto_Mojamuto-_Nooooooooooooo....wav
+IP=192.168.150.150
+ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
+LOCKFILE=$HOME/.ENJUTO
+
+
 
 if [ -f $LOCKFILE  ]; then
 	exit
@@ -11,7 +17,7 @@ echo $$ > $LOCKFILE
 fi
 
 
-trap force_exit SIGINT
+trap force_exit SIGINT SIGTERM
 
 force_exit(){
 rm -f $LOCKFILE
@@ -22,10 +28,6 @@ exit 0
 export DISPLAY=:0
 
 
-NOOOO=/home/dmolinao/scripts/parametros/Enjuto_Mojamuto-_Nooooooooooooo....wav
-IP=192.168.150.150
-ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
-LOCKFILE=$HOME/.ENJUTO
 
 while true ; do
 
@@ -38,5 +40,5 @@ if [ $? -ne 0 ]; then
 	paplay $NOOOO &
 	/usr/bin/notify-send -i $ICO  "NO FUNSIONA LA VPN"
 fi
-sleep 10
+sleep 30
 done

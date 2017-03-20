@@ -11,7 +11,7 @@ ICO=$EXEC_DIR/ast.jpeg
 COOKIE=$EXEC_DIR/cookie
 USER=dmolinao@ext.aragon.es
 LOCK_FILE=$EXEC_DIR/$EXEC_NAME.lock
-TELEGRAM_BOT=/home/dmolinao/scripts/otrs/telegram_bot
+TELEGRAM_BOT=/root/otrs/telegram_bot
 export DISPLAY=:0
 
 
@@ -63,6 +63,11 @@ if [ $? -ne 0 ]; then
 	force_exit
 fi
 
+if [ $(grep Contrase $TEMPFILE | wc -l) -ge 1 ]; then
+	echo "session expired"
+	clean_shit
+	exit
+fi
 
 
 if [ $(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l) -ne 2 ] ; then
@@ -83,17 +88,18 @@ TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | gre
 	if [ $? -eq 0 ]; then
 		continue
 	fi
-##Notificaciones por telegram a grupo NLG_DGA
-#	echo "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" | $TELEGRAM_BOT -200650011
-	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
-	paplay $NOTIF_SOUND
+##Notificaciones por telegram a canal DGA_OTRS
+	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+#	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
+#	paplay $NOTIF_SOUND
 	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 done
 
 rm $TEMPFILE
 sleep 60
-PROC=$(cat $LOCK_FILE)
-if [ -z $PROC ]; then
+PROC_CHECK=$(cat $LOCK_FILE)
+if [ "$PROC_CHECK" -ne "$PROC" ]; then
+	clean_shit
 	exit
 fi
 
@@ -106,4 +112,5 @@ rm $COOKIE
 rm $LOCK_FILE
 
 exit
+
 

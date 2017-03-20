@@ -123,10 +123,10 @@ fi
 
 echo "$(date $HORA)--------Empaquetando datos del backup en $BACKUPTARFILE y borRando carpeta temporal"
 
-tar cf $BACKUPTARFILE -C $BACKUPFULLDIR/temp . && rm -rf $BACKUPFULLDIR/temp
+tar cvzf $BACKUPTARFILE -C $BACKUPFULLDIR/temp . && rm -rf $BACKUPFULLDIR/temp
 
-echo "$(date $HORA)--------Comprimiendo $BACKUPTARFILE"
-gzip -9 $BACKUPTARFILE
+
+
 
 if [ $? -ne 0 ]; then
 	echo "$(date $HORA)--------Error al empaquetar y borrar temporal, saliendo..."
@@ -137,5 +137,3 @@ echo "$(date $HORA)--------backup creado de $LUSER@$HOST:$SOURCE $BACKUPTARFILE"
 
 
 purge_backups
-
-aromeroe,ejmartinezi,fbeltran,fhernandez,jfaure,jrucio,lmuzas,maclavero,malcantara,mdefrancisco,bancodedatos,acabanillas,atorrijopa,mbortiz,jsendra,fmiralles,cbona,cartiga,ahernandezj,miureta,lortun,mperezgara,amula,myperezu,ohernandezm,asupervia,eromeroj,moro,scallao,jlclavero,mamunnoz,pabrotons,ynunnez,magarciamar,bfernandezca,jlburrel,aiperezmo,ammalom,dguzman,aberga,ngarcias,jerce,rpereza,yfranco

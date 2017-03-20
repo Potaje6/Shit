@@ -84,6 +84,7 @@ main() {
     if [ $? -eq 0 ]; then
         datadir=$(mktemp -d)
         "$browser" \
+            --no-sandbox \
             --no-first-run \
             --proxy-server="socks5://localhost:$port" \
             --incognito \
