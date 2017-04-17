@@ -1,4 +1,5 @@
 #!/bin/ksh
+##EJECUTAR CON KSH!!!!
 i=0
 LUSER=sistemas
 x=1
@@ -7,6 +8,7 @@ bold=$(tput bold)
 normal=$(tput sgr0)
 HORA=+%Y-%m-%d--%H:%M:%S
 LOG_FILE=$HOME/logs/connections
+LIST_FILE=$HOME/list
 
 ##Captura de salida
 trap force_exit SIGINT
@@ -53,7 +55,11 @@ esac
 done
 
 #cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep $1 |\
-grep -v ^# $HOME/list | uniq -u |sort | grep $1 |\
+if [ ! -f $LIST_FILE ]; then
+    touch $LIST_FILE
+fi
+
+grep -v ^# $LIST_FILE | uniq -u |sort | grep $1 |\
 while read MAQUINA ; do
 i=$(($i+1))
 MAQUINA[$i]=$MAQUINA

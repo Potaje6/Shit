@@ -12,6 +12,7 @@ COOKIE=$EXEC_DIR/cookie
 USER=dmolinao@ext.aragon.es
 LOCK_FILE=$EXEC_DIR/$EXEC_NAME.lock
 TELEGRAM_BOT=/root/otrs/telegram_bot
+LOGFILE=$EXEC_DIR/log
 export DISPLAY=:0
 
 
@@ -33,7 +34,7 @@ clean_shit(){
 force_exit(){
         rm -f $LOCK_FILE
         rm -f $TEMPFILE
-		rm -f $COOKIE
+	rm -f $COOKIE
         exit 
 }
 
@@ -64,38 +65,47 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ $(grep Contrase $TEMPFILE | wc -l) -ge 1 ]; then
-	echo "session expired"
+	echo "session expired $(date +%Y-%m-%d--%H:%M:%S)" | tee -a $LOGFILE
 	clean_shit
 	exit
 fi
 
 
 if [ $(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l) -ne 2 ] ; then
-#	rm $TEMPFILE
+#	#rm $TEMPFILE
 #	rm $COOKIE
 #	rm $LOCK_FILE
 #	exit
-	rm $TEMPFILE
+	#rm $TEMPFILE
 	sleep 60
 	continue
 fi
 
 UP=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1)
 DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2)
+
 sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | while read TICKET_SUBJECT ; do
+	##Sacar prioridad
+PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
+PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
+GROUP_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 36)
+GROUP=$(sed -n ${GROUP_LINE}p $TEMPFILE | grep -o -P '(?<=div\ title\=\").*(?=\"\>)' | sed 's/TS2013:://')
 TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "TicketID=\w*" | sed 's/TicketID=//')
-	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
+	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY}" $HISTORY 
+#	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
 	if [ $? -eq 0 ]; then
 		continue
 	fi
 ##Notificaciones por telegram a canal DGA_OTRS
-	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+	echo "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+#	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
 #	paplay $NOTIF_SOUND
-	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
+	echo ${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
+#	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 done
 
-rm $TEMPFILE
+#rm $TEMPFILE
 sleep 60
 PROC_CHECK=$(cat $LOCK_FILE)
 if [ "$PROC_CHECK" -ne "$PROC" ]; then
@@ -107,10 +117,12 @@ fi
 done
 
 #salida
-rm $TEMPFILE
+#rm $TEMPFILE
 rm $COOKIE
 rm $LOCK_FILE
 
 exit
+
+
 
 

@@ -37,10 +37,13 @@ Script para hacer backups
 EOF
 }
 
+BACKUPFULLDIR=$BACKUPDIR/$APP
+BACKUPTARFILE=$BACKUPFULLDIR/$APP$(date +%Y%m%d%H%M).tar.gz
+
 purge_backups(){
 	ls -1 $BACKUPFULLDIR| sed "s/$APP//" | sed "s/\.tar.gz//" | while read FECHA_BACKUP; do
 		EXPIRED=$(echo "$(date +%Y%m%d%H%M)-$FECHA_BACKUP" | bc)
-		if [ $EXPIRED -gt $RETENC ]; then
+		if [ "$EXPIRED" -gt "$RETENC" ]; then
 #		echo "el backup de $APP del día $FECHA_BACKUP ha expirado, borrar?[y,n] " 
 #		read DELETE
 #		case $DELETE in
@@ -51,7 +54,7 @@ purge_backups(){
 #			;;
 #		esac
 			echo "Borrando $BACKUPFULLDIR/$APP$FECHA_BACKUP.tar"
-			rm -f $BACKUPFULLDIR/$APP$FECHA_BACKUP.tar
+			rm -f $BACKUPFULLDIR/$APP$FECHA_BACKUP.tar.gz
                         i=$(($i+1))
 		#else
 			#echo "Backup $BACKUPFULLDIR/$APP$FECHA_BACKUP.tar no expirado"
@@ -97,8 +100,7 @@ do
 esac
 done
 
-BACKUPFULLDIR=$BACKUPDIR/$APP
-BACKUPTARFILE=$BACKUPFULLDIR/$APP$(date +%Y%m%d%H%M).tar
+
 
 
 
