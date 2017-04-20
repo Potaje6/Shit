@@ -11,7 +11,7 @@ VIDEO_FILES="flv mp4 avi mpg mpeg mkv mov webm wmv --backup=t ogv"
 DISK_FILES="iso img dmg"
 ARCHIVE_FILES="7zp zip rar 7z bz2 gz lz tar"
 EXECUTABLE_FILES="exe sh jar"
-IMAGE_FILES="jpg bmp png gif"
+IMAGE_FILES="jpg bmp png gif jpeg"
 #These are links to your folders.
 DOWNLOADS_FOLDER="$HOME/Downloads"
 AUDIO_FOLDER="$HOME/Downloads/Music"
