@@ -1,5 +1,4 @@
 #!/bin/ksh
-##EJECUTAR CON KSH!!!!
 i=0
 LUSER=sistemas
 x=1
@@ -55,9 +54,11 @@ esac
 done
 
 #cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep $1 |\
+
 if [ ! -f $LIST_FILE ]; then
     touch $LIST_FILE
 fi
+
 
 grep -v ^# $LIST_FILE | uniq -u |sort | grep $1 |\
 while read MAQUINA ; do
@@ -112,4 +113,5 @@ echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} -
 
 esac
 exit
+
 
