@@ -84,7 +84,9 @@ fi
 UP=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1)
 DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2)
 
-sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | while read TICKET_SUBJECT ; do
+sed -i 's/\t/ /g' $TEMPFILE
+
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
 PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
@@ -97,7 +99,7 @@ TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | gre
 		continue
 	fi
 ##Notificaciones por telegram a canal DGA_OTRS
-	echo "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+	echo "${TICKET_ID} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
 #	paplay $NOTIF_SOUND
@@ -122,7 +124,5 @@ rm $COOKIE
 rm $LOCK_FILE
 
 exit
-
-
 
 
