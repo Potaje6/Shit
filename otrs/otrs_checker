@@ -64,7 +64,7 @@ if [ $? -ne 0 ]; then
 	force_exit
 fi
 
-if [ $(grep Contrase $TEMPFILE | wc -l) -ge 1 ]; then
+if [ $(grep '<label for="Password" class="Mandatory">' $TEMPFILE | wc -l) -ge 1 ]; then
 	echo "session expired $(date +%Y-%m-%d--%H:%M:%S)" | tee -a $LOGFILE
 	clean_shit
 	exit
@@ -86,7 +86,7 @@ DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -
 
 sed -i 's/\t/ /g' $TEMPFILE
 
-sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | while read TICKET_SUBJECT ; do
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
 PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
@@ -124,5 +124,4 @@ rm $COOKIE
 rm $LOCK_FILE
 
 exit
-
 
