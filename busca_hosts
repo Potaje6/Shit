@@ -5,9 +5,15 @@ x=1
 
 bold=$(tput bold)
 normal=$(tput sgr0)
+red=$(tput setaf 1)
+yellow=$(tput setaf 3)
+color=red
 HORA=+%Y-%m-%d--%H:%M:%S
-LOG_FILE=$HOME/logs/connections
-LIST_FILE=$HOME/list
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+LOG_DIR=$EXEC_DIR/logs
+LOG_FILE=$LOG_DIR/connections
+LIST_FILE=$EXEC_DIR/list
 
 ##Captura de salida
 trap force_exit SIGINT
@@ -63,8 +69,15 @@ fi
 grep -v ^# $LIST_FILE | uniq -u |sort | grep $1 |\
 while read MAQUINA ; do
 i=$(($i+1))
+
+if (( $i % 2 )); then
+    color=$red
+else
+    color=$yellow
+fi
+
 MAQUINA[$i]=$MAQUINA
-echo "$i = ${bold}$MAQUINA${normal}"
+eval echo "${color}$i${normal} = ${color}$MAQUINA${normal}"
 done
 
 case $i in
@@ -81,7 +94,7 @@ case $i in
 ;;      
 *)
 
-printf "Type 1 to $i to login: "
+printf "Type 1 to ${bold}$i${normal} to login: "
 
 re='^[0-9]+$'
 
@@ -103,6 +116,11 @@ exit
 fi
 
 
+if [ ! -d $LOG_DIR ]; then
+    echo "log dir not found, creating $LOG_DIR"
+    mkdir -p $LOG_DIR
+fi
+
 
 echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $LOG_FILE
 ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
@@ -113,5 +131,7 @@ echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} -
 
 esac
 exit
+
+
 
 
