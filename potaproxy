@@ -73,7 +73,7 @@ main() {
         -o 'ControlMaster no' \
         -o 'ControlPath /dev/null' \
         -n -N -D "$port" "$host" 
-    SSH_PID=$(ps -eo pid,comm --sort +start_time | tail -n 5  | awk 'NR==1{print$1}')
+    SSH_PID=$(pgrep -n ssh)
         # Most of the failures that would keep SSH from spinning up usually happen
     # pretty quickly. A notable exception to this is hostname resolution
     # failure which can vary wildly depending on DNS servers and DNS
