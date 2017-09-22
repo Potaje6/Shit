@@ -5,6 +5,7 @@
 EXEC_DIR=$(dirname $0)
 EXEC_NAME=$(basename $0)
 TEMPFILE=/var/tmp/$EXEC_NAME.$$
+TEMPFILE2=/var/tmp/$EXEC_NAME_admin_otrs.$$
 HISTORY=$EXEC_DIR/history
 NOTIF_SOUND=$EXEC_DIR/dspldeth.wav
 ICO=$EXEC_DIR/ast.jpeg
@@ -26,6 +27,7 @@ trap force_exit SIGINT SIGTERM
 clean_shit(){
 	rm -f $LOCK_FILE
 	rm -f $TEMPFILE
+	rm -f $TEMPFILE2
 	rm -f $COOKIE
 
 }
@@ -34,7 +36,8 @@ clean_shit(){
 force_exit(){
         rm -f $LOCK_FILE
         rm -f $TEMPFILE
-	rm -f $COOKIE
+        rm -f $TEMPFILE2
+		rm -f $COOKIE
         exit 
 }
 
@@ -60,6 +63,11 @@ curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -d 'Action=Login' -d 'Lang=es'
 #bucle para evitar overflood de sesiones
 while [ $PROC -eq $$ ] ; do
 curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE "https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked" 2> /dev/null
+curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE2 "https://cau.aragon.es/index.pl?Action=AgentTicketSearch;Subaction=Search;TakeLastSearch=1;SaveProfile=1;Profile=Admin_OTRS" >> $TEMPFILE 2>&1
+##quitamos el codigo de mierda de las comillas de todo el fichero temporal
+sed 's/&quot;//g' $TEMPFILE
+sed 's/&quot;//g' $TEMPFILE2
+
 if [ $? -ne 0 ]; then
 	force_exit
 fi
@@ -70,8 +78,10 @@ if [ $(grep '<label for="Password" class="Mandatory">' $TEMPFILE | wc -l) -ge 1 
 	exit
 fi
 
-
-if [ $(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l) -ne 2 ] ; then
+TBODY1=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l)
+TBODY2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | wc -l)
+TBODY_LINES=$((TBODY1+TBODY2))
+if [ $TBODY_LINES -lt 2 ] ; then
 #	#rm $TEMPFILE
 #	rm $COOKIE
 #	rm $LOCK_FILE
@@ -81,18 +91,44 @@ if [ $(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l) -ne 2 ] ; then
 	continue
 fi
 
-UP=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1)
-DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2)
+
+#he aqui el cancer personificado
+UP=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1 | head -n 1)
+DOWN=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2 | tail -n 1)
+UP2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f1 | head -n 1)
+DOWN2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " " -f2 | tail -n 1)
 
 sed -i 's/\t/ /g' $TEMPFILE
+sed -i 's/\t/ /g' $TEMPFILE2
 
-sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//' | while read TICKET_SUBJECT ; do
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
 PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
 GROUP_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 36)
 GROUP=$(sed -n ${GROUP_LINE}p $TEMPFILE | grep -o -P '(?<=div\ title\=\").*(?=\"\>)' | sed 's/TS2013:://')
 TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "TicketID=\w*" | sed 's/TicketID=//')
+	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY}" $HISTORY 
+#	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
+	if [ $? -eq 0 ]; then
+		continue
+	fi
+##Notificaciones por telegram a canal DGA_OTRS
+	echo "${TICKET_ID} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+#	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+#	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
+#	paplay $NOTIF_SOUND
+	echo ${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
+#	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
+done
+
+sed -n ${UP2},${DOWN2}p $TEMPFILE2   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
+	##Sacar prioridad
+PRIORITY_LINE=$(expr $(cat $TEMPFILE2 | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
+PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE2 | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
+GROUP_LINE=$(expr $(cat $TEMPFILE2 | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 36)
+GROUP=$(sed -n ${GROUP_LINE}p $TEMPFILE2 | grep -o -P '(?<=div\ title\=\").*(?=\"\>)' | sed 's/TS2013:://')
+TICKET_ID=$(cat $TEMPFILE2 | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "TicketID=\w*" | sed 's/TicketID=//')
 	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY}" $HISTORY 
 #	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
 	if [ $? -eq 0 ]; then
@@ -119,9 +155,16 @@ fi
 done
 
 #salida
-#rm $TEMPFILE
+rm $TEMPFILE
+rm $TEMPFILE2
 rm $COOKIE
 rm $LOCK_FILE
 
 exit
 
+
+21-Sep 03:03 walqastore-sd JobId 80412: Job smb-zaragoza-fs-backup.2017-09-20_20.00.00_53 is waiting. Cannot find any appendable volumes.
+Please use the "label" command to create a new Volume for:
+    Storage:      "smb-zaragoza-fs-storage" (/srv/bacula/smb-zaragoza-fs)
+    Pool:         smb-zaragoza-inc-pool
+    Media type:   smb-zaragoza-fs
