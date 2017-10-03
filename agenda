@@ -67,7 +67,7 @@ done
 
 
 
-grep -v ^# $AGENDA |sed -e 's/[-\/:]//g' | while read PLANIFICADO[$i] TAREA[$i]; do
+grep -v ^# $AGENDA | grep -v ^$ |sed -e 's/[-\/:]//g' | while read PLANIFICADO[$i] TAREA[$i]; do
 i=$(($i+1))
 done
 
