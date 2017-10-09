@@ -4,8 +4,8 @@
 
 EXEC_DIR=$(dirname $0)
 EXEC_NAME=$(basename $0)
-TEMPFILE=/var/tmp/$EXEC_NAME.$$
-TEMPFILE2=/var/tmp/$EXEC_NAME_admin_otrs.$$
+TEMPFILE=/var/tmp/${EXEC_NAME}.$$
+TEMPFILE2=/var/tmp/${EXEC_NAME}_admin_otrs.$$
 HISTORY=$EXEC_DIR/history
 NOTIF_SOUND=$EXEC_DIR/dspldeth.wav
 ICO=$EXEC_DIR/ast.jpeg
@@ -78,6 +78,12 @@ if [ $(grep '<label for="Password" class="Mandatory">' $TEMPFILE | wc -l) -ge 1 
 	exit
 fi
 
+
+
+
+
+
+
 TBODY1=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l)
 TBODY2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | wc -l)
 TBODY_LINES=$((TBODY1+TBODY2))
@@ -101,7 +107,7 @@ DOWN2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " "
 sed -i 's/\t/ /g' $TEMPFILE
 sed -i 's/\t/ /g' $TEMPFILE2
 
-sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/&lt;//g' | sed 's/&gt;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
 PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
