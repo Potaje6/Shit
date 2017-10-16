@@ -2,6 +2,12 @@
 ##Daniel Molina 
 ##Script para revisar nuevos tickets en el OTRS y sacar una notificacion por cada 1 nuevo
 
+
+set -x
+
+exec > /root/otrs/debug/$$ 2>&1
+
+
 EXEC_DIR=$(dirname $0)
 EXEC_NAME=$(basename $0)
 TEMPFILE=/var/tmp/${EXEC_NAME}.$$
@@ -14,6 +20,8 @@ USER=dmolinao@ext.aragon.es
 LOCK_FILE=$EXEC_DIR/$EXEC_NAME.lock
 TELEGRAM_BOT=/root/otrs/telegram_bot
 LOGFILE=$EXEC_DIR/log
+UP=0
+DOWN=0
 export DISPLAY=:0
 
 
@@ -78,12 +86,6 @@ if [ $(grep '<label for="Password" class="Mandatory">' $TEMPFILE | wc -l) -ge 1 
 	exit
 fi
 
-
-
-
-
-
-
 TBODY1=$(grep -n tbody $TEMPFILE | cut -d ":" -f1 | wc -l)
 TBODY2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | wc -l)
 TBODY_LINES=$((TBODY1+TBODY2))
@@ -107,7 +109,7 @@ DOWN2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " "
 sed -i 's/\t/ /g' $TEMPFILE
 sed -i 's/\t/ /g' $TEMPFILE2
 
-sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/&lt;//g' | sed 's/&gt;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
+sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
 PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<divtitle="P.">//; s/<\/div>//')
@@ -169,8 +171,3 @@ rm $LOCK_FILE
 exit
 
 
-21-Sep 03:03 walqastore-sd JobId 80412: Job smb-zaragoza-fs-backup.2017-09-20_20.00.00_53 is waiting. Cannot find any appendable volumes.
-Please use the "label" command to create a new Volume for:
-    Storage:      "smb-zaragoza-fs-storage" (/srv/bacula/smb-zaragoza-fs)
-    Pool:         smb-zaragoza-inc-pool
-    Media type:   smb-zaragoza-fs
