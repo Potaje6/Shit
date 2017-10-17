@@ -25,12 +25,18 @@ DOWN=0
 export DISPLAY=:0
 
 
+
+
+
 test -f $EXEC_DIR/pass
 if [ $? -ne 0 ]; then
 	echo "password file $EXEC_DIR/pass not found"
 fi
 
 trap force_exit SIGINT SIGTERM
+
+
+no_ticks(){}
 
 clean_shit(){
 	rm -f $LOCK_FILE
@@ -109,6 +115,8 @@ DOWN2=$(grep -n tbody $TEMPFILE2 | cut -d ":" -f1 | sed 'N;s/\n/ /' | cut -d " "
 sed -i 's/\t/ /g' $TEMPFILE
 sed -i 's/\t/ /g' $TEMPFILE2
 
+if [[ ! -z $UP && ! -z $DOWN ]]; then
+
 sed -n ${UP},${DOWN}p $TEMPFILE   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
 PRIORITY_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 43)
@@ -129,6 +137,10 @@ TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | gre
 	echo ${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 #	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 done
+fi
+
+if [[ ! -z $UP2 && ! -z $DOWN2 ]]; then
+
 
 sed -n ${UP2},${DOWN2}p $TEMPFILE2   | tr -s [:blank:] | sed "/^ $/d" | sed '/^$/d' | grep ' <a href="/index.pl?Action=AgentTicketZoom;TicketID=' | grep -o -P '(?<=title=").*(?=" class="MasterActionLink")' | sed 's/\"//g' | sed 's/&quot;//g' | sed 's/>//g' | sed 's/<//g' | while read TICKET_SUBJECT ; do
 	##Sacar prioridad
@@ -150,6 +162,7 @@ TICKET_ID=$(cat $TEMPFILE2 | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | gr
 	echo ${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 #	echo ${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S) >> $HISTORY
 done
+fi
 
 #rm $TEMPFILE
 sleep 60
