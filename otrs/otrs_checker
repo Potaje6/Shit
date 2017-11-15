@@ -3,9 +3,8 @@
 ##Script para revisar nuevos tickets en el OTRS y sacar una notificacion por cada 1 nuevo
 
 
-set -x
-
-exec > /root/otrs/debug/$$ 2>&1
+#set -x
+#exec > /root/otrs/debug/$$ 2>&1
 
 
 EXEC_DIR=$(dirname $0)
@@ -36,7 +35,6 @@ fi
 trap force_exit SIGINT SIGTERM
 
 
-no_ticks(){}
 
 clean_shit(){
 	rm -f $LOCK_FILE
@@ -76,8 +74,17 @@ curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -d 'Action=Login' -d 'Lang=es'
 
 #bucle para evitar overflood de sesiones
 while [ $PROC -eq $$ ] ; do
-curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE "https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked" 2> /dev/null
-curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE2 "https://cau.aragon.es/index.pl?Action=AgentTicketSearch;Subaction=Search;TakeLastSearch=1;SaveProfile=1;Profile=Admin_OTRS" >> $TEMPFILE 2>&1
+curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE "https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked" 2> /dev/null &
+CURL1=$(pgrep -n curl)
+curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE2 "https://cau.aragon.es/index.pl?Action=AgentTicketSearch;Subaction=Search;TakeLastSearch=1;SaveProfile=1;Profile=Admin_OTRS" 2> /dev/null &
+CURL2=$(pgrep -n curl)
+
+#kill para evitar cuelgues de curl
+sleep 8
+kill $CURL1
+kill $CURL2
+
+
 ##quitamos el codigo de mierda de las comillas de todo el fichero temporal
 sed -i 's/&quot;//g' $TEMPFILE
 sed -i 's/&quot;//g' $TEMPFILE2
@@ -176,11 +183,6 @@ fi
 done
 
 #salida
-rm $TEMPFILE
-rm $TEMPFILE2
-rm $COOKIE
-rm $LOCK_FILE
-
+clean_shit
 exit
-
 

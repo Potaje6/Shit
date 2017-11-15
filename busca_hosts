@@ -1,8 +1,11 @@
 #!/bin/ksh
+##Potaje6
+##Grep stuff in .ssh/known_hosts, typing the whole hostname is for niggers and fags
+
 i=0
 LUSER=sistemas
 x=1
-
+z=0
 bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setaf 1)
@@ -14,6 +17,21 @@ EXEC_NAME=$(basename $0)
 LOG_DIR=$EXEC_DIR/logs
 LOG_FILE=$LOG_DIR/connections
 LIST_FILE=$EXEC_DIR/list
+MODE=normie
+
+normie(){
+if (( $i % 2 )); then
+    color=$red
+else
+    color=$yellow
+fi
+}
+
+faggot(){
+z=$(($z+1))
+if [ $z -eq 6 ]; then z=1; fi
+color=$(tput setaf ${z})
+}
 
 ##Captura de salida
 trap force_exit SIGINT
@@ -30,6 +48,7 @@ cat <<EOF
         Usage:
         ./script [-h|-v|-u|-r] trozo_nombre_conocido_de_maquina
         This shit logs all ur activity for the NSA in $LOG_FILE
+        --faggot = do it faggot
 EOF
 exit
 }
@@ -51,6 +70,9 @@ shift
 -r) LUSER=root
 shift
 ;;
+--faggot) MODE=faggot
+shift
+;;
 -v) DEBUG=-v
 shift
 ;;
@@ -70,11 +92,7 @@ grep -v ^# $LIST_FILE | uniq -u |sort | grep $1 |\
 while read MAQUINA ; do
 i=$(($i+1))
 
-if (( $i % 2 )); then
-    color=$red
-else
-    color=$yellow
-fi
+$MODE
 
 MAQUINA[$i]=$MAQUINA
 eval echo "${color}$i${normal} = ${color}$MAQUINA${normal}"
