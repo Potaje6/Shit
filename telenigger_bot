@@ -1,0 +1,43 @@
+#!/bin/bash
+##Shitty bot to send messages to a telegram channel
+
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+TOKEN=
+
+if [ $# -eq 0 ]; then
+	echo "no parms or chat_id given"
+	echo "Ex. ./${EXEC_NAME} \$CHANNEL_ID"
+	exit
+fi
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-u") curl https://api.telegram.org/bot$TOKEN/getUpdates
+			exit
+;;
+
+        *) CHAT_ID=$1
+        shift
+esac
+done
+
+MESSAGE=$( cat | sed ':a;N;$!ba;s/\n/%0D%0A/g' )
+
+
+msgtelegram() {
+        curl -s \
+        -X POST \
+        https://api.telegram.org/bot$TOKEN/sendMessage \
+        -d text="$MESSAGE" \
+        -d chat_id=$CHAT_ID \
+	> /dev/null
+}
+
+if  [ -z "$MESSAGE" ]; then
+	exit
+else
+        msgtelegram
+fi
+
