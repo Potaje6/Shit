@@ -35,6 +35,7 @@ fi
 trap force_exit SIGINT SIGTERM
 
 
+no_ticks(){}
 
 clean_shit(){
 	rm -f $LOCK_FILE
@@ -85,6 +86,7 @@ kill $CURL1
 kill $CURL2
 
 
+
 ##quitamos el codigo de mierda de las comillas de todo el fichero temporal
 sed -i 's/&quot;//g' $TEMPFILE
 sed -i 's/&quot;//g' $TEMPFILE2
@@ -131,6 +133,7 @@ PRIORITY=$(sed -n ${PRIORITY_LINE}p $TEMPFILE | tr -d [:blank:] | sed -e 's/<div
 GROUP_LINE=$(expr $(cat $TEMPFILE | tr -s [:blank:] | grep -n -w -F "$TICKET_SUBJECT"  | head -1 | cut -d ":" -f1) + 36)
 GROUP=$(sed -n ${GROUP_LINE}p $TEMPFILE | grep -o -P '(?<=div\ title\=\").*(?=\"\>)' | sed 's/TS2013:://')
 TICKET_ID=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "TicketID=\w*" | sed 's/TicketID=//')
+TICKET_ID_REAL=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | grep --color=never -oh -e "MasterActionLink\">\w*" | sed 's/MasterActionLink\">//')
 	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT} ${PRIORITY}" $HISTORY 
 #	grep -F -q -w "${TICKET_ID} ${TICKET_SUBJECT}" $HISTORY 
 	if [ $? -eq 0 ]; then
@@ -162,7 +165,7 @@ TICKET_ID=$(cat $TEMPFILE2 | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" | gr
 		continue
 	fi
 ##Notificaciones por telegram a canal DGA_OTRS
-	echo "${TICKET_ID} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+	echo "${TICKET_ID_REAL} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
 #	paplay $NOTIF_SOUND
@@ -184,5 +187,6 @@ done
 
 #salida
 clean_shit
+
 exit
 
