@@ -35,7 +35,6 @@ fi
 trap force_exit SIGINT SIGTERM
 
 
-no_ticks(){}
 
 clean_shit(){
 	rm -f $LOCK_FILE
