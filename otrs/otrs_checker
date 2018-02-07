@@ -36,7 +36,6 @@ trap force_exit SIGINT SIGTERM
 
 
 
-
 clean_shit(){
 	rm -f $LOCK_FILE
 	rm -f $TEMPFILE
@@ -140,7 +139,7 @@ TICKET_ID_REAL=$(cat $TEMPFILE | tr -s [:blank:] | grep -w -F "$TICKET_SUBJECT" 
 		continue
 	fi
 ##Notificaciones por telegram a canal DGA_OTRS
-	echo "${TICKET_ID} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
+	echo "${TICKET_ID_REAL} || ${TICKET_SUBJECT} ${PRIORITY} ${GROUP} || $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	echo "${TICKET_ID} ${TICKET_SUBJECT} $(date +%Y-%m-%d--%H:%M:%S)%0D%0Ahttps://cau.aragon.es/index.pl?Action=AgentTicketZoom;TicketID=${TICKET_ID}" | $TELEGRAM_BOT -1001111278948
 #	notify-send -i $ICO "New Ticket" "${TICKET_ID} ${TICKET_SUBJECT}" &
 #	paplay $NOTIF_SOUND
