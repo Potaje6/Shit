@@ -11,6 +11,10 @@ i=0
 z=0
 LISTA_TAREAS=$(grep -v ^# $AGENDA |sed -e 's/[-\/:]//g')
 PF=-gt
+DAYS=0
+HOURS=0
+MINS=0
+NEW_MODE=0
 
 print_uso(){
 cat <<EOF
@@ -18,15 +22,21 @@ Script para hacer recordatorios por todas las consolas para evitar olvidos causa
 Usa el fichero en parametros/agenda donde se ejecuta para crear recordatorios
 Usa -a para meterlo al final del fichero
 Con el formato de "2016-08-05/08:38 RECORDATORIO"
-Uso: ./agenda [-n/--now] [-l/--list] [-e/--edit] [-h/--help] [-a/--add] [-f/--future]
+Uso: ./agenda [-n/--now] [-l/--list] [-e/--edit] [--help] [-a/--add] [-f/--future]
 
 
--n/--now muestra la fecha de ahora con el formato para la lista
+--now muestra la fecha de ahora con el formato para la lista
 -l/--list lista todas las tareas del fichero que no se hayan realizado/comentado
 -e/--edit edita el fichero de la agenda
 -a/--add
 -f/--future ver las tareas planificadas en el futuro
--h/--help muestra esta ayuda
+--help muestra esta ayuda
+Modo para añadir entrada nueva para vaguermonguers:
+-d/--days +x dias a añadir la entrada de la hora actual
+-h/--hours +x horas a añadir la entrada de la hora actual
+-m/--minutes +x minutos a añadir la entrada de la hora actual
+-n [mensaje] mensaje para la notificacion, OJO, pon esta mierda al final, no le busques las cosquillas al script
+
 
 EOF
 }
@@ -35,14 +45,35 @@ EOF
 while [ $# -gt 0 ];
 do
         case $1 in
-        "-n"|"--now") date +%Y-%m-%d/%H:%M
+        "--now") date +%Y-%m-%d/%H:%M
         exit
 ;;
         "-l"|"--list") grep -v ^# $AGENDA 
         exit
 ;;
-        "-h"|"--help") print_uso
+        "--help") print_uso
         exit
+;;
+        "-n"|"-new") NEW_MODE=1
+                    if [ -z $@ ]; then
+                    echo "No argument given"
+                    exit
+                    fi 
+                    shift
+                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" #>> $AGENDA
+        exit
+;;
+        "-d"|"--days") DAYS=$2
+        shift
+        shift
+;;
+        "-h"|"--hours") HOURS=$2
+        shift
+        shift
+;;
+        "-m"|"--minutes") MINS=$2
+        shift
+        shift
 ;;
         "-e"|"--edit") vi $AGENDA
         exit
