@@ -60,7 +60,7 @@ do
                     exit
                     fi 
                     shift
-                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" #>> $AGENDA
+                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" >> $AGENDA
         exit
 ;;
         "-d"|"--days") DAYS=$2
