@@ -1,0 +1,389 @@
+#!/bin/ksh
+
+tipo=""
+orig_desc=""
+dest_desc=""
+host=""
+port=""
+user=""
+pass=""
+path=""
+orig_file=""
+dest_file=""
+ORIGEN=0
+DESTINO=0
+
+
+launch_functions(){
+cat $1 | while read -r datos; do
+
+   ## parseo de variables
+   tipo=`echo ${datos} | awk -F ";" '{ print $1 }'`
+   orig_desc=`echo ${datos} | awk -F ";" '{ print $2 }'`
+   host=`echo ${datos} | awk -F ";" '{ print $3 }'`
+   port=`echo ${datos} | awk -F ";" '{ print $4 }'`
+   user=`echo ${datos} | awk -F ";" '{ print $5 }'`
+   pass=`echo ${datos} | awk -F ";" '{ print $6 }'`
+   path=`echo ${datos} | awk -F ";" '{ print $7 }'`
+   orig_file=`echo ${datos} | awk -F ";" '{ print $8 }'`
+   tipo_dest=`echo ${datos} | awk -F ";" '{ print $9 }'`
+   dest_desc_dest=`echo ${datos} | awk -F ";" '{ print $10 }'`
+   host_dest=`echo ${datos} | awk -F ";" '{ print $11 }'`
+   port_dest=`echo ${datos} | awk -F ";" '{ print $12 }'`
+   user_dest=`echo ${datos} | awk -F ";" '{ print $13 }'`
+   pass_dest=`echo ${datos} | awk -F ";" '{ print $14 }'`
+   path_dest=`echo ${datos} | awk -F ";" '{ print $15 }'`
+   dest_file_dest=`echo ${datos} | awk -F ";" '{ print $16 }'`
+   if [ "${tipo}" == "-" ]; then
+   echo "ficheros con patron ${orig_file} ya procesados"
+   continue
+   fi
+   if [ "${tipo_dest}" == "-" ]; then
+   echo "ficheros con patron ${dest_desc_dest} ya procesados"
+   continue
+   fi
+if [ $2 -eq 1 ]; then 
+   check_files_$tipo
+fi
+if [ $3 -eq 1 ]; then 
+   put_files_$tipo_dest
+fi
+done
+}
+
+
+print_uso(){
+   cat <<EOF
+   Usage: ./autocheck_files [-o|-d|-h] FichConfig
+   Script para generar lo que chequear los directorios de origen y destino
+   esto solo hace un dir/ls/introduzca_aqui_comando_equivalente_en_el_servidor_ftp en el origen/destino
+   ni descarga, ni envia ni nada, simplemente saca por pantalla lo que habría que ejecutar para conectarse, listar los ficheros de origen/destino y como filtrar los correspondientes
+   OJO! es posible que los comandos que te saque para comprobar los ficheros en el envio no sean del todo precisos
+   Parametros:
+   Pasando solo el fichero de configuracion generara el check de origen y destino
+   -o FichConfig generara solo el check de ORIGEN
+   -d FichConfig generara solo el check de DESTINO
+   -h muestra esta ayuda
+EOF
+}
+
+#####funciones de descarga/origen
+## funciones tipo=local
+check_files_local(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "ls "${path}" | egrep -i "${orig_file}" "
+echo
+echo "#END"
+}
+
+## funciones tipo=scp
+check_files_scp(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "ssh ${user}@${host} "ls \"${path}\" | egrep \"${orig_file}\"" "
+echo
+echo "#END"
+}
+
+## funciones tipo=as400
+check_files_as400(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host}"
+echo "user ${user} ${pass}"
+echo "cd ${path}"
+echo "passive"
+echo "dir ${orig_file}*.FILE"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+## funciones tipo=ftp
+check_files_ftp(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host}"
+echo "user ${user} ${pass}"
+echo "cd "${path}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+## funciones tipo=ftp_win
+check_files_ftp_win(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host}"
+echo "user ${user} ${pass}"
+echo "cd "${path}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_sftp
+check_files_lftp_sftp(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user},${pass} sftp://${host}"
+echo "cd "${path}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_ftp
+check_files_lftp_ftp(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user},${pass} ftp://${host}"
+echo "cd "${path}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_ftps
+check_files_lftp_ftps(){
+echo
+echo
+echo "CHECK DE ORIGEN de $FichConfig PATRON ${orig_file}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user},${pass} ftps://${host} -p ${port}"
+echo "cd ${path}"
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${orig_file}"
+echo
+echo "#END"
+}
+
+###funciones de envio/destino
+
+put_files_local(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "ls "${path_dest}" | egrep -i "${dest_file_dest}*" "
+echo
+echo "#END"
+}
+
+## funciones tipo=scp
+put_files_scp(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "ssh ${user_dest}@${host_dest} "ls \"${path_dest}\" | egrep \"${dest_file_dest}*\"" "
+echo
+echo "#END"
+}
+
+## funciones tipo=as400
+put_files_as400(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host_dest}"
+echo "user ${user_dest} ${pass_dest}"
+echo "cd ${path_dest}"
+echo "passive"
+echo "dir ${dest_file_dest}*.FILE"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+## funciones tipo=ftp
+put_files_ftp(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host_dest}"
+echo "user ${user_dest} ${pass_dest}"
+echo "cd "${path_dest}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+## funciones tipo=ftp_win
+put_files_ftp_win(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/ftp -v -n ${host_dest}"
+echo "user ${user_dest} ${pass_dest}"
+echo "cd "${path_dest}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_sftp
+put_files_lftp_sftp(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user_dest},${pass_dest} sftp://${host_dest}"
+echo "cd "${path_dest}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_ftp
+put_files_lftp_ftp(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user_dest},${pass_dest} ftp://${host_dest}"
+echo "cd "${path_dest}""
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+## funciones tipo=lftp_ftps
+put_files_lftp_ftps(){
+echo
+echo
+echo "CHECK DE DESTINO de $FichConfig PATRON ${dest_file_dest}:"
+echo "#######"
+echo 
+echo
+echo "/usr/bin/lftp -u ${user_dest},${pass_dest} ftps://${host_dest} -p ${port_dest}"
+echo "cd ${path_dest}"
+echo "dir"
+echo "quit"
+echo
+echo "#buscar patron ${dest_file_dest}"
+echo
+echo "#END"
+}
+
+
+if [ $# -gt 2 ];
+then
+   echo "has metido mas de 2 parametros"
+   print_uso
+   exit
+fi
+
+if [ $# -eq 0 ];
+then
+   echo "no has metido parametros"
+   print_uso
+   exit
+fi
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-o") FichConfig=$2
+            ORIGEN=1
+            launch_functions $FichConfig $ORIGEN $DESTINO
+        exit
+;;
+        "-d") FichConfig=$2
+            DESTINO=1
+            launch_functions $FichConfig $ORIGEN $DESTINO
+         exit
+;;
+        "-h") print_uso
+        exit
+;;
+
+        *)
+         FichConfig=$1
+         ORIGEN=1
+         DESTINO=1
+         launch_functions $FichConfig $ORIGEN $DESTINO
+
+
+         exit
+esac
+done
