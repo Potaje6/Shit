@@ -55,11 +55,11 @@ do
         exit
 ;;
         "-n"|"-new") NEW_MODE=1
+                    shift
                     if [ -z $@ ]; then
                     echo "No argument given"
                     exit
                     fi 
-                    shift
                     echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" >> $AGENDA
         exit
 ;;
