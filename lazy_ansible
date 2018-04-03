@@ -1,0 +1,59 @@
+#!/bin/bash
+
+print_uso(){
+        cat <<EOF
+./lazy_ansible -h $host $command
+-h host = host
+command
+EOF
+}
+
+
+LUSER=root
+
+
+
+if
+[ $# -eq 0 ]
+        then echo "No parms given"      
+        print_uso
+        exit 3
+else
+        if [ ! "$1" == "-h" ]; then 
+                echo "no host given"
+                print_uso
+                exit 3
+        fi
+        case $1 in
+        "-h") MAQUINA=$2
+        shift
+        shift
+;;
+
+#        *)
+#;;        
+esac
+fi
+
+nc -z -w 5 $MAQUINA 22 &> /dev/null
+if [ $? -ne 0 ] ; then
+        MAQUINA_GES="${MAQUINA}-ges"
+else
+        echo $MAQUINA Worked
+        echo "--------"
+        ssh -o StrictHostKeyChecking=no -n ${LUSER}@$MAQUINA "$@"
+        echo "########"
+        exit
+fi
+
+nc -z -w 5 $MAQUINA_GES 22 &> /dev/null
+if [ $? -ne 0 ] ; then
+        echo $MAQUINA failed
+else
+        echo $MAQUINA Worked
+        echo "--------"
+        ssh -o StrictHostKeyChecking=no -n ${LUSER}@$MAQUINA_GES "$@"
+        echo "########"
+fi
+
+
