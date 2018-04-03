@@ -1,5 +1,11 @@
 #!/bin/bash
 
+##Run it with the following function for extra niggerotic results putting the target hosts in $HOME/list
+#lazy_ansible(){
+#while read grasa ; do $HOME/scripts/lazy_ansible -h $grasa $@ ; done < $HOME/list
+#}
+
+
 print_uso(){
         cat <<EOF
 ./lazy_ansible -h $host $command
