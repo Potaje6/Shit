@@ -1,11 +1,11 @@
 #!/bin/ksh
-##D.Molina
+##Potaje6
 ##Script para dar permisos root (sudo) a cualquier usuario
 ##No lo intentes romper, esta hecho para gente con cabeza, no para devs
 
 
-SIS_KEY=/export/home/sistemas/.ssh/id_rsa #key para hacer la conexion
-REMOTE_LUSER=sistemas #usuario con el que tiramos el ssh
+SIS_KEY=$HOME/.ssh/id_rsa #key para hacer la conexion
+REMOTE_LUSER=$USER #usuario con el que tiramos el ssh
 PURGE=0 #quitar todas las concesiones de sudo dadas
 FORCE_CHECK=0 #forzar check 
 EXEC_DIR=$(dirname $0)
