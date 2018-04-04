@@ -1,12 +1,12 @@
 #!/bin/ksh
-##Potaje6
+##D.Molina
 ##Script para dar permisos root (sudo) a cualquier usuario
 ##No lo intentes romper, esta hecho para gente con cabeza, no para devs
 
 
-SIS_KEY=$HOME/.ssh/id_rsa #key para hacer la conexion
-REMOTE_LUSER=$USER #usuario con el que tiramos el ssh
-PURGE=0 #quitar todas las concesiones de sudo dadas
+SIS_KEY=/export/home/sistemas/.ssh/id_rsa #key para hacer la conexion
+REMOTE_LUSER=sistemas #usuario con el que tiramos el ssh
+ORDER66=0 #quitar todas las concesiones de sudo dadas
 FORCE_CHECK=0 #forzar check 
 EXEC_DIR=$(dirname $0)
 EXEC_NAME=$(basename $0)
@@ -35,7 +35,7 @@ logdis(){
 
 check_root(){
 
-if  [ $(ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo -l" | grep -q "(root) NOPASSWD: ALL") ]; then
+if  [ $(ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo -l" | grep -q "(root) NOPASSWD: ALL") ]; then
         echo "${REMOTE_LUSER} tiene permiso sudo"
 else 
         echo "${REMOTE_LUSER} NO tiene permiso sudo"
@@ -54,8 +54,8 @@ fi
 }
 
 test_sudo(){
-ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
-if [ ${REMOTE_HOST} -ne 0 ]; then
+ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
+if [ $? -ne 0 ]; then
         echo "$REMOTE_HOST no tiene sudo para $REMOTE_LUSER"
         exit
 fi
@@ -64,12 +64,12 @@ fi
 give_sudo(){
 
 #comprueba si existe el fichero de permiso
-ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo test -f ${SUDO_FILE}"
+ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo test -f ${SUDO_FILE}"
 if [ $? -eq 0 ]; then 
         echo "Fichero de permiso existente"; 
         read -p "Deseas borrar el fichero $SUDO_FILE de permiso del usuario ${LUSER} en ${REMOTE_HOST}?(y/n)" ELEC
         case $ELEC in
-                y) ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  rm -f ${SUDO_FILE}"
+                y) ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  rm -f ${SUDO_FILE}"
                    logdis Fichero $SUDO_FILE borrado ${REMOTE_HOST}:${LUSER}
                         ;;
                 *) force_exit
@@ -77,23 +77,24 @@ if [ $? -eq 0 ]; then
         esac
 fi
 #mete el fichero
-ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
+ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
 #comprueba que lo crea
-ssh ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
+ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
 if [ $? -eq 0 ]; then echo "Permiso aplicado correctamente a ${LUSER} en el host ${REMOTE_HOST} concedido hasta ${FECHA}"; else echo "Fichero de sudo no creado, comprueba el error en ${REMOTE_HOST}"; fi
 #agregar al fichero de concesiones activas
-echo "${REMOTE_HOST}:${LUSER}:${FECHA}" >> $ACTIVE_FILE
+echo "${REMOTE_HOST}:${LUSER}:${FECHA}:${REMOTE_LUSER}" >> $ACTIVE_FILE
 logdis Permiso dado ${REMOTE_HOST}:${LUSER}:${FECHA}
 }
 
 remove_sudo(){
 
 RMSUDO_LUSER=${2}
+RMSUDO_LOGINLUSER=${3}
 RMSUDO_FILE=/etc/sudoers.d/roottmp${RMSUDO_LUSER}
 RMSUDO_HOST=${1}
 
-ssh ${REMOTE_LUSER}@${RMSUDO_HOST} "sudo rm -f ${RMSUDO_FILE}"
-ssh ${REMOTE_LUSER}@${RMSUDO_HOST} "sudo test -f ${RMSUDO_FILE}"
+ssh ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo rm -f ${RMSUDO_FILE}"
+ssh ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo test -f ${RMSUDO_FILE}"
 if [ $? -ne 0 ]; then
         logdis Permiso borrado ${RMSUDO_FILE} ${2} ${FECHA}
 else
@@ -102,12 +103,28 @@ else
 fi
 }
 
+order66(){
+    echo "Te vas a fornicar todos los roots temporales de todas las concesiones que hay en el fichero ${ACTIVE_FILE}, estas seguro de querer ejecutar la orden 66? (do it faggot)"
+    read SUREBRO
+    if [ "$SUREBRO" == "do it faggot" ];
+        then
+sed 's/:/ /g' $ACTIVE_FILE | while read CHECKREMOTE_HOST CHECKLUSER EXPIRE_DATE CHECKLOGINREMOTE_LUSER; do 
+        logdis Permiso de ${CHECKLUSER} en $CHECKREMOTE_HOST ${EXPIRE_DATE}
+        remove_sudo ${CHECKREMOTE_HOST} ${CHECKLUSER} ${CHECKLOGINREMOTE_LUSER}
+        sed -i "/$CHECKREMOTE_HOST:$CHECKLUSER:$EXPIRE_DATE:$CHECKLOGINREMOTE_LUSER/d" ${ACTIVE_FILE}
+done
+else 
+logdis Cancelada orden66
+exit
+fi
+     
+}
 
 force_check(){
-sed 's/:/ /g' $ACTIVE_FILE | while read CHECKREMOTE_HOST CHECKLUSER EXPIRE_DATE; do 
+sed 's/:/ /g' $ACTIVE_FILE | while read CHECKREMOTE_HOST CHECKLUSER EXPIRE_DATE CHECKLOGINREMOTE_LUSER; do 
 if [ $FECHA -ge "$EXPIRE_DATE" ] ; then
         logdis Permiso de ${CHECKLUSER} en $CHECKREMOTE_HOST ${EXPIRE_DATE}
-        remove_sudo ${CHECKREMOTE_HOST} ${CHECKLUSER}
+        remove_sudo ${CHECKREMOTE_HOST} ${CHECKLUSER} ${CHECKLOGINREMOTE_LUSER}
         sed -i "/$CHECKREMOTE_HOST:$CHECKLUSER:$EXPIRE_DATE/d" ${ACTIVE_FILE}
 fi
 done
@@ -120,15 +137,15 @@ exit
 print_uso(){
 cat <<EOF
         Usage:
-        ./script [-h|-u|-l|--date|--time|--purge|--check] host
+        ./script [-h|-u|-l|--date|--time|--ORDER66|--check] host
         --help muestra este mensaje de ayuda
         -u usuario al que aplicar permiso sudo
-        -U usuario con el que tirar el ssh para acceder como root con sudo, default $REMOTE_LUSER
+        -U usuario con el que tirar el ssh ${DEBUG} para acceder como root con sudo, default $REMOTE_LUSER
         --date fecha que expirara la concesion de sudo, en formato date +%Y%m%d. Elegir esta opcion o --time, no las 2. default $FECHA
         --time dias que durara la concesion. Elegir esta opcion o --date, no las 2. Por defecto expira en una semana.
-        --purge borra todas las concesiones de sudo dadas en la maquina
+        --order66 borra todas las concesiones de sudo dadas en la maquina
         --check fuerza la funcion de chequear 
-        -v tira el ssh en modo verbose
+        -v tira el ssh ${DEBUG} en modo verbose
 EOF
 exit
 }
@@ -159,7 +176,7 @@ shift
 shift
 shift
 ;;
---purge) PURGE=1
+--order66) ORDER66=1
 shift
 ;;
 --check) FORCE_CHECK=1
@@ -173,8 +190,8 @@ shift
 esac
 done
 
-if [ ${PURGE} -eq 1 ]; then
-        final_solution
+if [ ${ORDER66} -eq 1 ]; then
+        order66
 fi
 
 if [ ${FORCE_CHECK} -eq 1 ]; then
@@ -209,6 +226,8 @@ test_sudo
 #aplicando concesion
 
 give_sudo
+
+
 
 
 
