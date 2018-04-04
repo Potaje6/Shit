@@ -35,7 +35,7 @@ logdis(){
 
 check_root(){
 
-if  [ $(ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo -l" | grep -q "(root) NOPASSWD: ALL") ]; then
+if  [ $(ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo -l" | grep -q "(root) NOPASSWD: ALL") ]; then
         echo "${REMOTE_LUSER} tiene permiso sudo"
 else 
         echo "${REMOTE_LUSER} NO tiene permiso sudo"
@@ -54,7 +54,7 @@ fi
 }
 
 test_sudo(){
-ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
 if [ $? -ne 0 ]; then
         echo "$REMOTE_HOST no tiene sudo para $REMOTE_LUSER"
         exit
@@ -64,12 +64,12 @@ fi
 give_sudo(){
 
 #comprueba si existe el fichero de permiso
-ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo test -f ${SUDO_FILE}"
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo test -f ${SUDO_FILE}"
 if [ $? -eq 0 ]; then 
         echo "Fichero de permiso existente"; 
         read -p "Deseas borrar el fichero $SUDO_FILE de permiso del usuario ${LUSER} en ${REMOTE_HOST}?(y/n)" ELEC
         case $ELEC in
-                y) ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  rm -f ${SUDO_FILE}"
+                y) ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  rm -f ${SUDO_FILE}"
                    logdis Fichero $SUDO_FILE borrado ${REMOTE_HOST}:${LUSER}
                         ;;
                 *) force_exit
@@ -77,9 +77,9 @@ if [ $? -eq 0 ]; then
         esac
 fi
 #mete el fichero
-ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
 #comprueba que lo crea
-ssh ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
 if [ $? -eq 0 ]; then echo "Permiso aplicado correctamente a ${LUSER} en el host ${REMOTE_HOST} concedido hasta ${FECHA}"; else echo "Fichero de sudo no creado, comprueba el error en ${REMOTE_HOST}"; fi
 #agregar al fichero de concesiones activas
 echo "${REMOTE_HOST}:${LUSER}:${FECHA}:${REMOTE_LUSER}" >> $ACTIVE_FILE
@@ -93,13 +93,17 @@ RMSUDO_LOGINLUSER=${3}
 RMSUDO_FILE=/etc/sudoers.d/roottmp${RMSUDO_LUSER}
 RMSUDO_HOST=${1}
 
-ssh ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo rm -f ${RMSUDO_FILE}"
-ssh ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo test -f ${RMSUDO_FILE}"
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo rm -f ${RMSUDO_FILE}"
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${RMSUDO_LOGINLUSER}@${RMSUDO_HOST} "sudo test -f ${RMSUDO_FILE}"
 if [ $? -ne 0 ]; then
         logdis Permiso borrado ${RMSUDO_FILE} ${2} ${FECHA}
 else
         logdis Error al quitar permiso ${RMSUDO_FILE} ${2} ${FECHA}
+    if [ ${ORDER66} -eq 0 ]; then
         exit
+    else
+        continue
+    fi
 fi
 }
 
@@ -108,11 +112,14 @@ order66(){
     read SUREBRO
     if [ "$SUREBRO" == "do it faggot" ];
         then
+logdis EXECUTE ORDER 66
 sed 's/:/ /g' $ACTIVE_FILE | while read CHECKREMOTE_HOST CHECKLUSER EXPIRE_DATE CHECKLOGINREMOTE_LUSER; do 
         logdis Permiso de ${CHECKLUSER} en $CHECKREMOTE_HOST ${EXPIRE_DATE}
         remove_sudo ${CHECKREMOTE_HOST} ${CHECKLUSER} ${CHECKLOGINREMOTE_LUSER}
         sed -i "/$CHECKREMOTE_HOST:$CHECKLUSER:$EXPIRE_DATE:$CHECKLOGINREMOTE_LUSER/d" ${ACTIVE_FILE}
 done
+logdis ORDER 66 EXECUTED
+exit
 else 
 logdis Cancelada orden66
 exit
@@ -140,12 +147,12 @@ cat <<EOF
         ./script [-h|-u|-l|--date|--time|--ORDER66|--check] host
         --help muestra este mensaje de ayuda
         -u usuario al que aplicar permiso sudo
-        -U usuario con el que tirar el ssh ${DEBUG} para acceder como root con sudo, default $REMOTE_LUSER
+        -U usuario con el que tirar el ssh -o StrictHostKeyChecking=no -n ${DEBUG} para acceder como root con sudo, default $REMOTE_LUSER
         --date fecha que expirara la concesion de sudo, en formato date +%Y%m%d. Elegir esta opcion o --time, no las 2. default $FECHA
         --time dias que durara la concesion. Elegir esta opcion o --date, no las 2. Por defecto expira en una semana.
         --order66 borra todas las concesiones de sudo dadas en la maquina
         --check fuerza la funcion de chequear 
-        -v tira el ssh ${DEBUG} en modo verbose
+        -v tira el ssh en modo verbose
 EOF
 exit
 }
