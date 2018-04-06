@@ -8,6 +8,7 @@ LUSER=root
 SOURCE=/apps/TS3_Server
 HORA=+%Y-%m-%d--%H:%M:%S
 i=0
+NOPURGE=0
 
 
 trap force_exit SIGINT
@@ -95,6 +96,9 @@ do
         "-p") purge_backups
         exit
 ;;
+        "-np") NOPURGE=1
+        exit
+;;
         *)
         shift
 esac
@@ -137,5 +141,6 @@ fi
 
 echo "$(date $HORA)--------backup creado de $LUSER@$HOST:$SOURCE $BACKUPTARFILE"
 
-
+if [ "$NOPURGE" -ne 1 ]; then
 purge_backups
+fi
