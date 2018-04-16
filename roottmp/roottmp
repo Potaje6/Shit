@@ -78,9 +78,10 @@ if [ $? -eq 0 ]; then
 fi
 #mete el fichero
 ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"chmod 440 ${SUDO_FILE}\" "
 #comprueba que lo crea
 ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
-if [ $? -eq 0 ]; then echo "Permiso aplicado correctamente a ${LUSER} en el host ${REMOTE_HOST} concedido hasta ${FECHA}"; else echo "Fichero de sudo no creado, comprueba el error en ${REMOTE_HOST}"; fi
+if [ $? -eq 0 ]; then echo "Permiso aplicado correctamente a ${LUSER} en el host ${REMOTE_HOST} concedido hasta ${FECHA}"; else echo "Fichero de sudo no creado, comprueba el error en ${REMOTE_HOST}"; exit; fi
 #agregar al fichero de concesiones activas
 echo "${REMOTE_HOST}:${LUSER}:${FECHA}:${REMOTE_LUSER}" >> $ACTIVE_FILE
 logdis Permiso dado ${REMOTE_HOST}:${LUSER}:${FECHA}
