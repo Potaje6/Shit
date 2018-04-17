@@ -2,6 +2,7 @@
 ##D.Molina
 ##Script para dar permisos root (sudo) a cualquier usuario
 ##No lo intentes romper, esta hecho para gente con cabeza, no para devs
+##HAPPY DEBUGGING!
 
 
 SIS_KEY=/export/home/sistemas/.ssh/id_rsa #key para hacer la conexion
