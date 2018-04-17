@@ -77,8 +77,8 @@ if [ $? -eq 0 ]; then
         esac
 fi
 #mete el fichero
-ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE}\" "
-ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"chmod 440 ${SUDO_FILE}\" "
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE} ; chmod 440 ${SUDO_FILE}\" "
+#ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"chmod 440 ${SUDO_FILE}\" "
 #comprueba que lo crea
 ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo grep -q \"${LUSER}.*NOPASSWD\" ${SUDO_FILE}"
 if [ $? -eq 0 ]; then echo "Permiso aplicado correctamente a ${LUSER} en el host ${REMOTE_HOST} concedido hasta ${FECHA}"; else echo "Fichero de sudo no creado, comprueba el error en ${REMOTE_HOST}"; exit; fi
@@ -197,11 +197,12 @@ shift
 ;;
 esac
 done
-
-if [ $(test -f $ACTIVE_FILE) -ne 0 ]; then 
+test -f $ACTIVE_FILE
+if [ $? -ne 0 ]; then 
     touch $ACTIVE_FILE
 fi
-if [ $(test -f $LOG_FILE) -ne 0 ]; then
+test -f $LOG_FILE
+if [ $? -ne 0 ]; then
     touch $LOG_FILE
 fi
 
@@ -241,8 +242,4 @@ test_sudo
 #aplicando concesion
 
 give_sudo
-
-
-
-
 
