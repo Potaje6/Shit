@@ -198,6 +198,13 @@ shift
 esac
 done
 
+if [ $(test -f $ACTIVE_FILE) -ne 0 ]; then 
+    touch $ACTIVE_FILE
+fi
+if [ $(test -f $LOG_FILE) -ne 0 ]; then
+    touch $LOG_FILE
+fi
+
 if [ ${ORDER66} -eq 1 ]; then
         order66
 fi
