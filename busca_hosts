@@ -108,12 +108,12 @@ case $i in
         nc $DEBUG -w 3 -z $1 22 > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo "${bold}$1${normal} exist and got 22 open"
-            ssh $DEBUG -l $LUSER $1
+            ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER $1
         fi
         exit 
 ;;      
 1) echo "${bold}${MAQUINA[$i]}${normal} ${bold}FOUND${normal}"
-        ssh $DEBUG -l $LUSER ${MAQUINA[$i]}
+        ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
 ;;      
 *)
 
