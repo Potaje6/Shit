@@ -1,0 +1,134 @@
+#!/bin/ksh
+#bperror -U -backstat -by_statcode -hoursago 24
+##HAPPY DEBUGGING##
+i=0
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+BACK_SERVER=
+
+
+
+if
+[ $# -eq 0 ]
+        then echo "No se han introducido parametros"
+        
+        print_uso
+        exit 3
+else
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-h") BACK_SERVER=$2
+        shift
+;;
+        *)
+        shift
+esac
+done
+fi
+
+if [ -z $BACK_SERVER ]; then
+        echo "you have to give a backup server to perform the report"
+        echo "./$EXEC_NAME -h \$BACK_SERVER"
+fi
+
+STATUS_DIR=$EXEC_DIR/status_files_$BACK_SERVER
+STATUS_DIR_OLD=$EXEC_DIR/status_files_old_$BACK_SERVER
+STATUS_DIR_BACK=$EXEC_DIR/status_files_back_$BACK_SERVER
+EXCLUDE_FILE=$EXEC_DIR/exclude_$BACK_SERVER
+SUCCESS_FILE=/var/tmp/exitus
+LIST_FILE=$EXEC_DIR/list_$BACK_SERVER
+HORA=+%Y-%m-%d--%H:%M
+HORA_BACK=+%Y-%m-%d
+LOG_DIR=$EXEC_DIR/log_$BACK_SERVER
+LOG_FILE=$LOG_DIR/log-$(date $HORA)_$BACK_SERVER
+LOG_FILE_MONTHLY=$LOG_DIR/monthly$(date  -d i-day-ago +%Y-%m)
+
+
+if [ ! -d  $STATUS_DIR ]; then
+        mkdir $STATUS_DIR
+fi
+
+if [ ! -d $STATUS_DIR_OLD ]; then
+        mkdir $STATUS_DIR_OLD
+fi
+
+
+
+
+
+
+ssh sistemas@${BACK_SERVER} sudo /usr/openv/netbackup/bin/admincmd/bperror -U -backstat -by_statcode -hoursago 24 > $LIST_FILE
+
+echo 99999 >> $LIST_FILE
+
+
+echo -e "#Informe backups fallados de $BACK_SERVER entre $(date -d 1-day-ago $HORA_BACK) y $(date -d 2-day-ago $HORA_BACK) \n" > $LOG_FILE
+
+cat $LIST_FILE | egrep -n ^..?[0-9] | cut -d ":" -f1 | while read grasa; do
+i=$(($i+1))
+LINEA[$i]=$grasa
+done
+
+last=$i
+
+
+for i in ${!LINEA[*]}; do
+STATUS_FILE=$STATUS_DIR/$(sed -n ${LINEA[$i]}p $LIST_FILE | egrep  ^..?[0-9] | sed 's/^\ \ //' | sed 's/^\ //'| cut -d ' ' -f1 )
+touch $STATUS_FILE
+b=$((i+1))
+if [ $b -gt $last ]; then
+        b=$i
+fi
+sed -n $((${LINEA[$i]} + 1)),$((${LINEA[$b]} - 1))p $LIST_FILE | tr [:blank:] "\n" | sed '/^$/d' >> $STATUS_FILE
+
+done
+
+cp $STATUS_DIR/0 $SUCCESS_FILE
+
+rm -f $STATUS_DIR/0 $STATUS_DIR/247 $STATUS_DIR/1 $STATUS_DIR/99999
+
+for FICH in $(ls $STATUS_DIR) ; do
+        cat $STATUS_DIR/$FICH | grep -v -f $EXCLUDE_FILE | grep -v -f $SUCCESS_FILE | sort -u | while read client ; do
+                if [ "$client" = "NONE" ]; then
+                        continue
+                fi
+                STATUS_OLD=$(grep -wl $client $STATUS_DIR_OLD/* | rev | cut -d "/" -f1 | rev | sed ':a;N;$!ba;s/\n/,/g')
+                STATUS_LAST=$(grep -wl $client $STATUS_DIR/* | rev | cut -d "/" -f1 | rev | sed ':a;N;$!ba;s/\n/,/g')
+                if [ ! -z $STATUS_OLD ]; then
+                        echo "$client LAST $STATUS_LAST PREV $STATUS_OLD" >> $LOG_FILE
+                fi
+                unset STATUS_OLD
+        done
+done
+
+for FICH in $(ls $STATUS_DIR) ; do
+        cat $STATUS_DIR/$FICH | grep -v -f $EXCLUDE_FILE | sort -u | while read client ; do
+                if [ "$client" = "NONE" ]; then
+                        continue
+                fi
+                echo $client >> /var/tmp/$EXEC_NAME.$$
+        done
+done
+
+echo "" >> $LOG_FILE
+echo "#$(wc -l /var/tmp/$EXEC_NAME.$$| awk '{print$1}') Total backups failed" >> $LOG_FILE
+echo "$(date -d 1-day-ago $HORA_BACK) $(wc -l /var/tmp/$EXEC_NAME.$$| awk '{print$1}') Total backups failed" >> $LOG_FILE_MONTHLY
+
+
+rm /var/tmp/$EXEC_NAME.$$
+
+#cat $LOG_FILE | mailx -s "backup-report-$(date $HORA_BACK) $BACK_SERVER" -r backupbot@aragon.es dmolinao@ext.aragon.es
+#cat $LOG_FILE | mailx -s "backup-report-$(date $HORA_BACK) $BACK_SERVER" -r backupbot@aragon.es ts_almacenamiento_backup@aragon.es daniel.molina@nologin.es jose.berenguer@nologin.es daniel.gutierrez@nologin.es javier.badia@nologin.es ivan.pamplona@nologin.es javier.bahillo@nologin.es mario.andres@nologin.es david.munoz@nologin.es juan.orti@nologin.es asier.ruiz@nologin.es
+column -t $LOG_FILE | sed '/^#/ s/ \{1,\}/ /g' | mailx -s "backup-report-$(date $HORA_BACK) $BACK_SERVER" -r backupbot@aragon.es ts_almacenamiento_backup@aragon.es
+
+
+
+
+mv $LIST_FILE $STATUS_DIR_OLD
+tar czf $STATUS_DIR_BACK/status_old$(date -d 1-day-ago $HORA_BACK)_$BACK_SERVER.tar.gz -C  $STATUS_DIR_OLD .
+rm -f $STATUS_DIR_OLD/*
+#rm -f $SUCCESS_FILE
+mv $STATUS_DIR/* $STATUS_DIR_OLD
+
+
