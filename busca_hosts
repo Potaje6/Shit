@@ -44,6 +44,13 @@ force_exit(){
         exit 3
 }
 
+logdis(){
+        if test -f $LOG_FILE; then
+        echo "$(date $HORA)--------$@" >> $LOG_FILE
+    else echo "Log file $LOG_FILE missing, not logging"
+        fi    
+}
+
 print_uso(){
 cat <<EOF
         Usage:
@@ -145,10 +152,10 @@ if [ ! -d $LOG_DIR ]; then
 fi
 
 
-echo "$(date $HORA)--------ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}" >> $LOG_FILE
+logdis ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
 ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$(echo $?)
-echo "$(date $HORA)--------finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS" >> $LOG_FILE
+logdis finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 ;;
 
