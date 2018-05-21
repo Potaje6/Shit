@@ -19,6 +19,7 @@ LOG_DIR=$EXEC_DIR/logs
 LOG_FILE=$LOG_DIR/connections
 LIST_FILE=$EXEC_DIR/list
 MODE=normie
+NOLOG=0
 
 normie(){
 if (( $i % 2 )); then
@@ -45,10 +46,12 @@ force_exit(){
 }
 
 logdis(){
+    if [ $NOLOG -eq 0 ]; then
         if test -f $LOG_FILE; then
         echo "$(date $HORA)--------$@" >> $LOG_FILE
-    else echo "Log file $LOG_FILE missing, not logging"
-        fi    
+            else echo "Log file $LOG_FILE missing, not logging"
+        fi
+    fi
 }
 
 print_uso(){
@@ -59,6 +62,7 @@ cat <<EOF
         -v verbose mode
         -u user
         -r root
+        --nolog do not log access
         --faggot = do it faggot
 EOF
 exit
@@ -87,10 +91,17 @@ shift
 -v) DEBUG=-v
 shift
 ;;
+--nolog) NOLOG=1
+shift
+;;
 *) break
 ;;
 esac
 done
+
+if [ $# -eq 0 ];then
+print_uso
+fi
 
 #solo 1 de los 2 modos puede estar activo, o fichero list o known_hosts
 cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep $1 |\
