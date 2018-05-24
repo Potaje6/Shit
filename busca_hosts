@@ -66,7 +66,7 @@ cat <<EOF
         -u user
         -r root
         --nolog do not log access
-        --send scp [file] [string_to_grep] (works with the rest of parms)
+        --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
         --faggot = do it faggot
 EOF
@@ -93,6 +93,11 @@ get_files(){
 
 #check if we have to send or get
 send_or_get(){
+if [ -z $SCP_FILE ]; then
+    echo "File to send/get not specified"
+    print_uso
+fi
+
 if [[ $SEND -eq 1 && $GET -eq 1 ]]; then
     echo "Use send or get, not both"
 fi
