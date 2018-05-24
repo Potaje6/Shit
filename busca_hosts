@@ -20,6 +20,9 @@ LOG_FILE=$LOG_DIR/connections
 LIST_FILE=$EXEC_DIR/list
 MODE=normie
 NOLOG=0
+SCP=0
+SEND=0
+GET=0
 
 normie(){
 if (( $i % 2 )); then
@@ -57,15 +60,49 @@ logdis(){
 print_uso(){
 cat <<EOF
         Usage:
-        ./script [-h|-v|-u|-r] trozo_nombre_conocido_de_maquina
+        ./script [-h|-v|-u|-r] string_to_grep
         This shit logs all ur activity for the NSA in $LOG_FILE
         -v verbose mode
         -u user
         -r root
         --nolog do not log access
+        --send scp [file] [string_to_grep] (works with the rest of parms)
+            -R recursive
         --faggot = do it faggot
 EOF
 exit
+}
+
+#send stuff
+send_files(){
+    scp $DEBUG $RECUSIVE $1 $3@$2:
+    EXITUS=$(echo $?)
+    logdis finished scp $DEBUG $RECUSIVE $1 $3@$2: ---- $EXITUS
+    exit $EXITUS
+
+}
+
+#get stuff
+get_files(){
+    scp $DEBUG $RECUSIVE $3@$2:$1 .
+    EXITUS=$(echo $?)
+    logdis finished scp $DEBUG $RECUSIVE $3@$2:$1 . ---- $EXITUS
+    exit $EXITUS
+
+}
+
+#check if we have to send or get
+send_or_get(){
+if [[ $SEND -eq 1 && $GET -eq 1 ]]; then
+    echo "Use send or get, not both"
+fi
+if [ $SEND -eq 1 ];then
+    send_files $SCP_FILE $2 $3
+fi
+
+if [ $GET -eq 1 ];then
+    get_files $SCP_FILE $2 $3
+fi
 }
 
 if [ $# -eq 0 ];then
@@ -94,6 +131,21 @@ shift
 --nolog) NOLOG=1
 shift
 ;;
+--send) SEND=1
+         SCP=1
+shift
+;;
+--get) GET=1
+       SCP=1
+shift
+;;
+-f) SCP_FILE=$2
+shift
+shift
+;;
+-R) RECUSIVE=-r
+shift
+;;
 *) break
 ;;
 esac
@@ -104,21 +156,22 @@ print_uso
 fi
 
 #solo 1 de los 2 modos puede estar activo, o fichero list o known_hosts
-cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep $1 |\
+cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep -- $1 |\
 
 #if [ ! -f $LIST_FILE ]; then
 #    touch $LIST_FILE
 #fi
 
 #grep -v ^# $LIST_FILE |\
-uniq -u |sort | grep $1 |\
+#uniq -u |sort | grep -- $1 |\
 while read MAQUINA ; do
 i=$(($i+1))
 
 $MODE
 
 MAQUINA[$i]=$MAQUINA
-eval echo "${color}$i${normal} = ${color}$MAQUINA${normal}"
+#eval echo "${color}$i${normal} = ${color}$MAQUINA${normal}"
+echo "${color}$i${normal} = ${color}$MAQUINA${normal}"
 done
 
 case $i in
@@ -126,12 +179,20 @@ case $i in
         nc $DEBUG -w 3 -z $1 22 > /dev/null 2>&1
         if [ $? -eq 0 ]; then
             echo "${bold}$1${normal} exist and got 22 open"
+            if [ $SCP -eq 1 ]; then
+            send_or_get $SCP_FILE $2 $LUSER
+            fi
             ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER $1
+            logdis finished ssh $DEBUG  -l $LUSER $1 ---- $EXITUS
         fi
         exit 
 ;;      
 1) echo "${bold}${MAQUINA[$i]}${normal} ${bold}FOUND${normal}"
+            if [ $SCP -eq 1 ]; then
+            send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
+            fi
         ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 ;;      
 *)
 
@@ -157,22 +218,24 @@ exit
 fi
 
 
-if [ ! -d $LOG_DIR ]; then
-    echo "log dir not found, creating $LOG_DIR"
-    mkdir -p $LOG_DIR
-fi
+#if [ ! -d $LOG_DIR ]; then
+#    echo "log dir not found, creating $LOG_DIR"
+#    mkdir -p $LOG_DIR
+#fi
 
+    if [ $SCP -eq 1 ]; then
+            send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
+    fi
 
 logdis ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
-ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
+ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$(echo $?)
-logdis finished ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
+logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 ;;
 
 esac
 exit
-
 
 
 
