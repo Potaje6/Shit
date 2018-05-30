@@ -194,10 +194,10 @@ case $i in
 ;;      
 1) echo "${bold}${MAQUINA[$i]}${normal} ${bold}FOUND${normal}"
             if [ $SCP -eq 1 ]; then
-            send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
+            send_or_get $SCP_FILE ${MAQUINA[$i]} $LUSER
             fi
         ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
-        logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
+        logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
 *)
 
