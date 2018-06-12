@@ -1,0 +1,92 @@
+#!/bin/ksh
+#Daniel Molina
+##Creeme, no quieres saber para que uso este script
+##Si es absurdamente ineficiente de forma intencionada
+
+
+print_uso(){
+	cat <<EOF
+
+Script para usos extraños y singulares que es mejor no explicar
+Uso: ./rotate [-f fichero a reproducir]  [-p path] [-r ruta ficheros a rotar] [--play reproducir despues de rotar]
+
+OJO!!! no pongas / al final de las rutas o seguramente petará
+pruebalo con while true ; do ./rotate --play ; done y echate unas risas
+
+
+EOF
+}
+
+PLAY=0
+PTH=/home/dmolinao/alla
+FICH=activo.wav
+REPRODUCIENDO=$PTH/$FICH
+ROTATE=$PTH/HoTS/Murky_default
+WAVS=$(ls -1 $ROTATE/*wav | wc -l  | cut -d" " -f1)
+TURNO=$(echo $(($RANDOM%$WAVS)))
+
+print_uso(){
+	cat <<EOF
+
+Script para usos extraños y singulares que es mejor no explicar
+Uso: ./rotate [-f fichero a reproducir]  [-p path] [-r ruta ficheros a rotar] [--play reproducir despues de rotar]
+
+OJO!!! no pongas / al final de las rutas o seguramente petará
+pruebalo con while true ; do ./rotate --play ; done y echate unas risas
+
+Valores por defecto:
+path general=$PTH
+path de rotados=$ROTATE
+cantidad de wavs=$WAVS
+
+EOF
+}
+
+
+
+
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "--play") PLAY=1
+        shift
+;;
+        "-f") FICH=$2
+        shift
+;;
+        "-p") PTH=$2
+        shift
+;;
+        "-r") ROTATE=$2
+        shift
+;;
+        "-h") print_uso
+        exit
+;;
+        *)
+        shift
+esac
+done
+
+i=1
+until [ $i -gt $WAVS ]; do
+    FICHERO[$i]=`ls -1 $ROTATE/*wav | sed -n $(($i))p`
+   i=$(($i+1))
+done
+
+TURNO=$(echo $(($RANDOM%$WAVS)))
+
+
+while [ $TURNO -eq 0 ]; do
+	TURNO=$(echo $(($RANDOM%$WAVS)))
+done
+
+cp -f ${FICHERO[$TURNO]} $REPRODUCIENDO > /dev/null
+
+
+if [ "$PLAY" -eq 1 ]; then 
+paplay $REPRODUCIENDO &
+fi
+
+
+exit

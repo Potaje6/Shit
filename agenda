@@ -22,7 +22,7 @@ Script para hacer recordatorios por todas las consolas para evitar olvidos causa
 Usa el fichero en parametros/agenda donde se ejecuta para crear recordatorios
 Usa -a para meterlo al final del fichero
 Con el formato de "2016-08-05/08:38 RECORDATORIO"
-Uso: ./agenda [-n/--now] [-l/--list] [-e/--edit] [--help] [-a/--add] [-f/--future]
+Uso: ./agenda [--now] [-l/--list] [-e/--edit] [--help] [-a/--add] [-f/--future]
 
 
 --now muestra la fecha de ahora con el formato para la lista
@@ -35,7 +35,7 @@ Modo para añadir entrada nueva para vaguermonguers:
 -d/--days +x dias a añadir la entrada de la hora actual
 -h/--hours +x horas a añadir la entrada de la hora actual
 -m/--minutes +x minutos a añadir la entrada de la hora actual
--n [mensaje] mensaje para la notificacion, OJO, pon esta mierda al final, no le busques las cosquillas al script
+-n/--new [mensaje] mensaje para la notificacion, OJO, pon esta mierda al final, no le busques las cosquillas al script
 
 
 EOF
@@ -54,7 +54,7 @@ do
         "--help") print_uso
         exit
 ;;
-        "-n"|"-new") NEW_MODE=1
+        "-n"|"--new") NEW_MODE=1
                     shift
                     if [ -z $@ ]; then
                     echo "No argument given"
