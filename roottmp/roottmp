@@ -48,27 +48,15 @@ fi
 test_concession(){
 grep -q "${REMOTE_HOST}:${LUSER}" $ACTIVE_FILE
 if [ $? -eq 0 ]; then
-        echo "Ya tiene permisos sudo $(grep "${REMOTE_HOST}:${REMOTE_LUSER}" ${ACTIVE_FILE})" 
+        echo "Ya tiene permisos sudo asignados $(grep "${REMOTE_HOST}:${LUSER}" ${ACTIVE_FILE})" 
         force_exit
 fi
-
-}
-
-test_sudo(){
-ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
-if [ $? -ne 0 ]; then
-        echo "$REMOTE_HOST no tiene sudo para $REMOTE_LUSER"
-        exit
-fi
-}
-
-give_sudo(){
-
 #comprueba si existe el fichero de permiso
 ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo test -f ${SUDO_FILE}"
 if [ $? -eq 0 ]; then 
         echo "Fichero de permiso existente"; 
-        read -p "Deseas borrar el fichero $SUDO_FILE de permiso del usuario ${LUSER} en ${REMOTE_HOST}?(y/n)" ELEC
+        echo "Deseas borrar el fichero $SUDO_FILE de permiso del usuario ${LUSER} en ${REMOTE_HOST}?(y/n)"
+        read ELEC
         case $ELEC in
                 y) ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  rm -f ${SUDO_FILE}"
                    logdis Fichero $SUDO_FILE borrado ${REMOTE_HOST}:${LUSER}
@@ -77,6 +65,20 @@ if [ $? -eq 0 ]; then
                         ;;
         esac
 fi
+
+}
+
+test_sudo(){
+ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo pwd" > /dev/null
+if [ $? -ne 0 ]; then
+        echo "$REMOTE_HOST   sudo para $REMOTE_LUSER"
+        exit
+fi
+}
+
+give_sudo(){
+
+
 #mete el fichero
 ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"echo ${LUSER} ALL= NOPASSWD: ALL > ${SUDO_FILE} ; chmod 440 ${SUDO_FILE}\" "
 #ssh -o StrictHostKeyChecking=no -n ${DEBUG} ${REMOTE_LUSER}@${REMOTE_HOST} "sudo  bash -c \"chmod 440 ${SUDO_FILE}\" "

@@ -2,6 +2,7 @@
 ##Potaje6
 ##Grep stuff in .ssh/known_hosts, typing the whole hostname is for niggers and fags
 ##Disable ssh's know_hosts encryption to use this
+##Require ksh
 
 i=0
 LUSER=sistemas
