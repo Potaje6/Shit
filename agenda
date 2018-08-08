@@ -67,32 +67,29 @@ do
         exit
 ;;
         "-d"|"--days") DAYS=$2
-            if [ "$DAYS" -eq "$DAYS" ]; then
-                echo
-                else
-                echo "NO TIME GIVEN!!"
-                exit
-            fi 2>/dev/null
+        echo $DAYS | grep -q [0-9]
+        if [ $? -ne 0 ]; then
+            echo "NO TIME GIVEN!!"
+            exit 1
+        fi
         shift
         shift
 ;;
         "-h"|"--hours") HOURS=$2
-            if [ "$HOURS" -eq "$HOURS" ]; then
-                echo
-                else
-                echo "NO TIME GIVEN!!"
-                exit
-            fi 2>/dev/null
+        echo $HOURS | grep -q [0-9]
+        if [ $? -ne 0 ]; then
+            echo "NO TIME GIVEN!!"
+            exit 1
+        fi
         shift
         shift
 ;;
         "-m"|"--minutes") MINS=$2
-            if [ "$MINS" -eq "$MINS" ]; then
-                echo
-                else
-                echo "NO TIME GIVEN!!"
-                exit
-            fi 2>/dev/null
+        echo $MINS | grep -q [0-9]
+        if [ $? -ne 0 ]; then
+            echo "NO TIME GIVEN!!"
+            exit 1
+        fi
         shift
         shift
 ;;
