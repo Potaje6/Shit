@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#Potaje6
+#Script para ponerme un texto en la barra de tareas y matar el proceso que se le pase por parametro al salir
 import signal
 import gi
 import sys
