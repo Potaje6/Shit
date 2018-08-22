@@ -63,7 +63,8 @@ do
                     exit
                     fi 
                     expr $DAYS + $HOURS + $MINS | grep -q 0
-                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" >> $AGENDA
+                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" | tee -a $AGENDA
+
         exit
 ;;
         "-d"|"--days") DAYS=$2
