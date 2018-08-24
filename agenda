@@ -133,3 +133,4 @@ until [ $z -eq $i ] ; do
 	z=$(($z+1))
 done
 
+echo "Finished checking $i entries"
