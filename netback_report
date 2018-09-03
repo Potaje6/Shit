@@ -1,0 +1,32 @@
+#!/bin/bash
+#srsly kys
+#el campo size tiene una manera de obtenerse para backups normales y otro para los de vms
+
+ 
+export LC_ALL=POSIX
+export PATH=$PATH:/usr/openv/netbackup/bin/admincmd
+ 
+ 
+sudo /usr/openv/netbackup/bin/admincmd/bperror -U -backstat -l -s info -hoursago 6 | awk '{
+         ID=$6
+         if (!COMPLETED[ID]) JOBS[++TOTAL]=ID
+         COMPLETED[ID]=$1
+         SERVER[ID]=$5
+  JOBID[ID]=$6
+         CLIENT[ID]=$12
+         POLICY[ID]=$14
+         SCHEDULE[ID]=$16
+         STATUS[ID]=$19
+         TEXTO[ID]=""
+         if (STATUS[ID] != 0) for (i=20;i<=NF;i++) TEXTO[ID]=TEXTO[ID]""$i" "
+        }
+       END {
+            FORMAT="%6s %-1.30s %-1.30s %-25.50s %-20.50s %-20.30s %-19s %20s \n"
+            printf FORMAT, "STATUS", "CLIENT", "POLICY", "SCHED", "SERVER", "TIME COMPLETED", "ERROR", "JOBID"
+            for (i=1;i<=TOTAL;i++)
+            {
+             printf FORMAT, STATUS[JOBS[i]], CLIENT[JOBS[i]], POLICY[JOBS[i]], SCHEDULE[JOBS[i]], SERVER[JOBS[i]], strftime("%d/%m/%Y %H:%M:%S",COMPLETED[JOBS[i]]), TEXTO[JOBS[i]], JOBID[JOBS[i]]
+             ESTADO=ESTADO + STATUS[JOBS[i]] + JOBID[JOBS[i]]
+            }
+            exit ESTADO
+           }' | tr -s [:space:] | tail -n +2 |  while read status client  policy schedule  server date hour jobid; do size=$(printf '%.3f\n' $(bc <<<"scale=3; $(expr $(echo $(sudo /usr/openv/netbackup/bin/admincmd/bperror -l -client $client | grep $(sudo /usr/openv/netbackup/bin/admincmd/bpimagelist -l | grep $client |  grep -w $jobid | tr -s [:space:] | cut -f6 -d " ") | grep "successfully wrote" | cut -f20 -d " " | perl -p -e 's/\n/ + /' | head -c-3)) ) / 1048576" )); if [ "$size" == "0.000" ]; then size=$(printf '%.3f\n' $(bc <<<"scale=3; $(expr $(echo $(sudo /usr/openv/netbackup/bin/admincmd/bperror -l -client $client | grep $(sudo /usr/openv/netbackup/bin/admincmd/bpimagelist -l | grep $client |  grep -w $jobid | tr -s [:space:] | cut -f6 -d " ") | grep "successfully wrote" | cut -f18 -d " " | perl -p -e 's/\n/ + /' | head -c-3)) ) / 1048576" ))  ;fi; echo "$status $client $server $policy $schedule $date:$hour $size" ; done 2>/dev/null
