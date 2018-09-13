@@ -37,7 +37,7 @@ Modo para añadir entrada nueva para vaguermonguers:
 -d/--days +x dias a añadir la entrada de la hora actual
 -h/--hours +x horas a añadir la entrada de la hora actual
 -m/--minutes +x minutos a añadir la entrada de la hora actual
--n/--new [mensaje] mensaje para la notificacion, OJO, pon esta mierda al final, no le busques las cosquillas al script
+-n/--new [mensaje] mensaje para la notificacion, OJO, pon esta mierda antes de la notificacion, si no se pone no añadira la entrada, no le busques las cosquillas al script, esta hecho para gente con cabeza
 
 
 EOF
