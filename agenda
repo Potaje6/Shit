@@ -126,7 +126,7 @@ until [ $z -eq $i ] ; do
 	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
 #		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
 		beep
-                notify-send "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}"
+                notify-send "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" > /dev/null 2>&1
                  zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
 	fi
 	#echo ${PLANIFICADO[$z]} ${TAREA[$z]}
