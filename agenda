@@ -68,8 +68,7 @@ do
         exit
 ;;
         "-d"|"--days") DAYS=$2
-        echo $DAYS | grep -q [0-9]
-        if [ $? -ne 0 ]; then
+        if ! [[ "$DAYS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
             exit 1
         fi
@@ -77,8 +76,7 @@ do
         shift
 ;;
         "-h"|"--hours") HOURS=$2
-        echo $HOURS | grep -q [0-9]
-        if [ $? -ne 0 ]; then
+        if ! [[ "$HOURS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
             exit 1
         fi
@@ -86,8 +84,7 @@ do
         shift
 ;;
         "-m"|"--minutes") MINS=$2
-        echo $MINS | grep -q [0-9]
-        if [ $? -ne 0 ]; then
+        if ! [[ "$MINS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
             exit 1
         fi
