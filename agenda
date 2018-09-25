@@ -114,7 +114,8 @@ done
 
 
 
-grep -v ^# $AGENDA | grep -v ^$ |sed -e 's/[-\/:]//g' | while read PLANIFICADO[$i] TAREA[$i]; do
+grep -v ^# $AGENDA | grep -v ^$ | while read PLANIFICADO_RAW[$i] TAREA[$i]; do
+PLANIFICADO[$i]=$(echo ${PLANIFICADO_RAW[$i]} | sed -e 's/[-\/:]//g')
 i=$(($i+1))
 done
 
@@ -124,7 +125,13 @@ until [ $z -eq $i ] ; do
 #		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
 		beep
                 notify-send "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" > /dev/null 2>&1
-                 zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
+                 #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
+                zenity --question --text="${TAREA[$z]} planificado para  ${PLANIFICADO_RAW[$z]}\n\naplazar dentro de 5 parsecs?" --default-cancel  --title "POTAGENDA" > /dev/null 2>&1
+                if [ $? -eq 0 ]; then
+                 sed -i "s/$(echo ${PLANIFICADO_RAW[$z]} | sed 's/\//\\\//') ${TAREA[$z]}/$(date -d "+5 minutes" +%Y-%m-%d\/%H:%M | sed 's/\//\\\//') ${TAREA[$z]}/" $AGENDA
+                 notify-send "${TAREA[$z]} APLAZADO 5 MINUTOS" > /dev/null 2>&1
+                fi
+
 	fi
 	#echo ${PLANIFICADO[$z]} ${TAREA[$z]}
 	z=$(($z+1))
