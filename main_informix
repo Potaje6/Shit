@@ -1,1 +1,375 @@
-informix/main_informix
+#!/bin/ksh
+##Daniel Molina v0.6 2017-04-12
+
+
+NODO_ACTUAL=bol-informix-401
+NODO_SECUNDARIO=bol-informix-402
+DATE=/usr/bin/date
+HORA=+%Y-%m-%d--%H:%M:%S
+LOG_FILE=/var/log/informix.log
+IFACE_PRIMARIO=e1000g0:1
+IFACE_SECUNDARIO=e1000g0:2
+IP_PRIMARIA=192.168.0.2
+IP_SECUNDARIA=192.168.0.3
+NETMASK=255.255.255.192
+TEMPFILE=/var/tmp/informix_switch.$$
+
+i=0
+
+
+
+
+exec_informix(){
+eval su - informix -c \" $@ \"
+}
+
+S_exec_informix(){ 
+        ssh root@$NODO_SECUNDARIO su - informix -c \" $@ \"
+}
+
+
+
+print_uso(){
+cat <<EOF
+USAGE:
+./informix_switch [option]
+switch : cambia el nodo activo actual a pasivo y viceversa en $NODO_SECUNDARIO
+-n/network : switch service IPs
+-s/status : show current IPs in ${NODO_ACTUAL} and ${NODO_SECUNDARIO}
+EOF
+exit
+}
+
+
+logdis(){
+        echo "$(date $HORA)--------$@" | tee -a $LOG_FILE
+}
+
+error_handling(){
+if [ $? -ne 0 ]; then
+logdis $@
+echo "Error, log is at $LOG_FILE"
+exit
+fi
+}
+
+
+
+
+
+
+
+PRIM_TO_SEC(){
+
+logdis CHANGING CONFIG in $NODO_ACTUAL to SECONDARY MODE
+cp -pf /informix/etc/onconfig.sec /informix/etc/onconfig.cli 
+error_handling FAILED SETTING  /informix/etc/onconfig.sec $NODO_ACTUAL CODE:1
+cp -pf /export/home/informix/.profile.sec /export/home/informix/.profile
+error_handling FAILED SETTING /export/home/informix/.profile.sec $NODO_ACTUAL CODE:2
+cp -pf /var/home/config_his.sec /var/home/config_his.conf
+error_handling FAILED SETTING /var/home/config_his.sec  $NODO_ACTUAL CODE:3
+logdis CHANGING CRON CONFIG IN $NODO_ACTUAL
+cp -pf /var/spool/cron/crontabs/informix.secundario /var/spool/cron/crontabs/informix
+error_handling CHANGING CRON CONFIG IN $NODO_ACTUAL CODE:4
+logdis RESTARTING CRON IN $NODO_ACTUAL
+svcadm restart cron
+
+logdis CHANGING CONFIG in $NODO_SECUNDARIO to PRIMARY MODE
+ssh root@$NODO_SECUNDARIO "cp -pf /informix/etc/onconfig.pri /informix/etc/onconfig.cli" > /dev/null
+error_handling FAILED SETTING /informix/etc/onconfig.pri at $NODO_SECUNDARIO CODE:5
+ssh root@$NODO_SECUNDARIO "cp -pf /export/home/informix/.profile.pri /export/home/informix/.profile" > /dev/null
+error_handling FAILED SETTING /export/home/informix/.profile.pri at $NODO_SECUNDARIO CODE:6
+ssh root@$NODO_SECUNDARIO "cp -pf /var/home/config_his.pri /var/home/config_his.conf" > /dev/null
+error_handling FAILED SETTING /var/home/config_his.pri at $NODO_SECUNDARIO CODE:7
+logdis CHANGING CRON CONFIG IN $NODO_SECUNDARIO 
+ssh root@$NODO_SECUNDARIO cp -pf /var/spool/cron/crontabs/informix.primario /var/spool/cron/crontabs/informix > /dev/null
+error_handling CHANGING CRON CONFIG IN $NODO_SECUNDARIO  CODE:8
+logdis RESTARTING CRON IN $NODO_SECUNDARIO
+ssh root@$NODO_SECUNDARIO svcadm restart cron > /dev/null
+
+}
+
+SEC_TO_PRIM(){
+logdis CHANGING CONFIG in $NODO_ACTUAL to PRIMARY MODE
+cp -pf /informix/etc/onconfig.pri /informix/etc/onconfig.cli
+error_handling FAILED SETTING /informix/etc/onconfig.pri at $NODO_ACTUAL CODE:9
+cp -pf /export/home/informix/.profile.pri /export/home/informix/.profile
+error_handling FAILED SETTING /export/home/informix/.profile.pri at $NODO_ACTUAL CODE:10
+cp -pf /var/home/config_his.pri /var/home/config_his.conf
+error_handling FAILED SETTING /var/home/config_his.pri at $NODO_ACTUAL CODE:11
+logdis CHANGING CRON CONFIG IN $NODO_ACTUAL
+cp -pf  /var/spool/cron/crontabs/informix.primario /var/spool/cron/crontabs/informix
+error_handling CHANGING CRON CONFIG IN $NODO_ACTUAL CODE:12
+logdis RESTARTING CRON IN $NODO_ACTUAL
+svcadm restart cron
+
+logdis CHANGING CONFIG in $NODO_SECUNDARIO to SECONDARY MODE
+ssh root@$NODO_SECUNDARIO "cp -pf /informix/etc/onconfig.sec /informix/etc/onconfig.cli " > /dev/null
+error_handling FAILED SETTING  /informix/etc/onconfig.sec $NODO_SECUNDARIO CODE:13
+ssh root@$NODO_SECUNDARIO "cp -pf /export/home/informix/.profile.sec /export/home/informix/.profile" > /dev/null
+error_handling FAILED SETTING /export/home/informix/.profile.sec $NODO_SECUNDARIO CODE:14
+ssh root@$NODO_SECUNDARIO "cp -pf /var/home/config_his.sec /var/home/config_his.conf" > /dev/null
+error_handling FAILED SETTING /var/home/config_his.sec  $NODO_SECUNDARIO CODE:15
+logdis CHANGING CRON CONFIG IN $NODO_SECUNDARIO 
+ssh root@$NODO_SECUNDARIO "cp -pf /var/spool/cron/crontabs/informix.secundario /var/spool/cron/crontabs/informix" > /dev/null
+error_handling CHANGING CRON CONFIG IN $NODO_SECUNDARIO  CODE:16
+logdis RESTARTING CRON IN $NODO_SECUNDARIO
+ssh root@$NODO_SECUNDARIO svcadm restart cron > /dev/null
+
+
+}
+
+NETWORK() {
+        ifconfig -a | grep -w $IFACE_PRIMARIO > /dev/null
+        error_handling ERROR $IFACE_PRIMARIO not EXIST at $NODO_ACTUAL CODE:17
+        ifconfig -a | grep -w $IFACE_SECUNDARIO > /dev/null
+        error_handling ERROR $IFACE_SECUNDARIO not EXIST at $NODO_ACTUAL CODE:18
+        ssh root@$NODO_SECUNDARIO ifconfig -a | grep -w $IFACE_PRIMARIO > /dev/null
+        error_handling ERROR $IFACE_PRIMARIO not EXIST at $NODO_SECUNDARIO CODE:19
+        ssh root@$NODO_SECUNDARIO ifconfig -a | grep -w $IFACE_SECUNDARIO > /dev/null
+        error_handling ERROR $IFACE_SECUNDARIO not EXIST at $NODO_SECUNDARIO CODE:20
+
+
+
+#case $(ifconfig -a | egrep "$IFACE_PRIMARIO|$IFACE_SECUNDARIO" | sort | while read IFACE; do
+#echo "$IFACE" |  grep "\<UP," | cut -d " " -f1  |sed 's/:$//' 
+#done) in
+#$IFACE_PRIMARIO) echo "Es el primario"
+#;;
+#$IFACE_SECUNDARIO) echo "Es el secundario"
+#;;
+#*) echo unknown
+#;;
+#esac
+
+#case $(ifconfig $IFACE_PRIMARIO | grep inet | cut -d " " -f2) in
+
+case $(ifconfig -a | egrep "$IFACE_PRIMARIO|$IFACE_SECUNDARIO" | sort |  grep "\<UP," | cut -d " " -f1  |sed 's/:$//') in
+
+$IFACE_PRIMARIO)
+        logdis SWITCHING IP $IP_PRIMARIA TO $NODO_SECUNDARIO and $IP_SECUNDARIA TO $NODO_ACTUAL
+        logdis BRINGING DOWN $IP_PRIMARIA at $NODO_ACTUAL
+        ifconfig $IFACE_PRIMARIO down
+        error_handling FAILED BRINGING DOWN $IFACE_PRIMARIO at $NODO_ACTUAL CODE:21
+        logdis BRINGING UP $IP_PRIMARIA at $NODO_SECUNDARIO
+        ssh root@$NODO_SECUNDARIO ifconfig $IFACE_PRIMARIO up > /dev/null
+        error_handling FAILED BRINGING UP $IFACE_PRIMARIO at $NODO_SECUNDARIO CODE:22
+        logdis BRINGING DOWN $IP_SECUNDARIA at $NODO_SECUNDARIO
+        ssh root@$NODO_SECUNDARIO ifconfig $IFACE_SECUNDARIO down > /dev/null
+        error_handling FAILED BRINGING DOWN $IFACE_SECUNDARIO at $NODO_SECUNDARIO CODE:23
+        logdis BRINGING UP $IP_PRIMARIA at $NODO_ACTUAL
+        ifconfig $IFACE_SECUNDARIO up
+        error_handling FAILED BRINGING UP $IFACE_SECUNDARIO at $NODO_ACTUAL CODE:24
+        logdis SWITCHED IP $IP_SECUNDARIA TO $NODO_SECUNDARIO and $IP_PRIMARIA TO $NODO_ACTUAL
+
+
+;;
+$IFACE_SECUNDARIO)
+        logdis SWITCHING IP $IP_SECUNDARIA TO $NODO_SECUNDARIO and $IP_PRIMARIA TO $NODO_ACTUAL
+        logdis BRINGING DOWN $IP_SECUNDARIA at $NODO_ACTUAL
+        ifconfig $IFACE_SECUNDARIO down
+        error_handling FAILED BRINGING DOWN $IFACE_SECUNDARIO at $NODO_ACTUAL CODE:25
+        logdis BRINGING UP $IP_SECUNDARIA at $NODO_SECUNDARIO
+        ssh root@$NODO_SECUNDARIO ifconfig $IFACE_SECUNDARIO up > /dev/null
+        error_handling FAILED BRINGING UP $IFACE_SECUNDARIO at $NODO_SECUNDARIO CODE:26
+        logdis BRINGING DOWN $IFACE_PRIMARIO at $NODO_SECUNDARIO
+        ssh root@$NODO_SECUNDARIO ifconfig $IFACE_PRIMARIO down > /dev/null
+        error_handling FAILED BRINGING DOWN $IFACE_PRIMARIO at $NODO_SECUNDARIO CODE:27
+        logdis BRINGING UP $IP_PRIMARIA at $NODO_ACTUAL
+        ifconfig $IFACE_PRIMARIO up
+        error_handling FAILED BRINGING UP $IFACE_PRIMARIO at $NODO_ACTUAL CODE:28
+        logdis SWITCHED IP $IP_SECUNDARIA TO $NODO_SECUNDARIO and $IP_PRIMARIA TO $NODO_ACTUAL
+        ###FORZAR EJECUCION DE SCRIPT EN NODO PRIMARIO
+        #logdis IP SECONDARY UP, $IP_PRIMARIA IS ACTIVE
+        #exit 1
+
+;;
+*) logdis MORE THAN ONE IFACE UP
+        exit
+;;
+esac
+}
+
+
+INFORMIX_PRIM_TO_SEC(){
+
+
+
+
+logdis SWITCHING INFORMIX PRIMARY NODE
+logdis CHECKING NODE STATE IN $NODO_ACTUAL
+logdis $NODO_ACTUAL IS ON MODE: 
+exec_informix onstat -
+logdis $NODO_SECUNDARIO IS ON MODE:
+S_exec_informix onstat -
+
+logdis TURNING DOWN BOTH NODES
+logdis TURNING DOWN PRIMARY NODE $NODO_ACTUAL
+exec_informix onmode -ky
+exec_informix onstat - | grep -w "not initialized" > /dev/null
+error_handling FAILED STOPPING INFORMIX AT $NODO_ACTUAL CODE:31
+logdis SWITCHING SECONDARY NODE $NODO_SECUNDARIO TO STANDARD MODE
+S_exec_informix onmode -d standard > /dev/null
+S_exec_informix onstat - | grep -w "On-Line" > /dev/null 
+error_handling FAILED SWITCHING INFORMIX to STANDARD AT $NODO_SECUNDARIO CODE:32
+logdis STOPPING INFORMIX AT $NODO_SECUNDARIO
+S_exec_informix onmode -ky > /dev/null
+error_handling FAILED STOPPING INFORMIX AT $NODO_SECUNDARIO CODE:33
+logdis CHANGING CONFIG FILES
+PRIM_TO_SEC
+logdis SWITCHING NETWORK INTERFACES
+NETWORK
+#logdis STARTING INFORMIX AT $NODO_ACTUAL
+#exec_informix oninit -v
+#error_handling FAILED STARTING INFORMIX AT $NODO_ACTUAL CODE:34
+logdis STARTING INFORMIX AT $NODO_SECUNDARIO to PRIMARY MODE
+S_exec_informix oninit -v > /dev/null
+error_handling FAILED STARTING INFORMIX AT $NODO_SECUNDARIO CODE:35
+logdis STARTING $NODO_ACTUAL to SECONDARY MODE
+exec_informix oninit -vPHY
+exec_informix onstat - | grep -w "Fast Recovery" > /dev/null
+error_handling FAILED STARTING $NODO_ACTUAL to SECONDARY CODE:36
+logdis SETTING $NODO_SECUNDARIO to PRIMARY
+S_exec_informix onmode -d primary clinica_hdr2 
+S_exec_informix onstat - | grep -w "On-Line (Prim)" > /dev/null 
+error_handling FAILED SETTING $NODO_SECUNDARIO to PRIMARY CODE:37
+logdis SETTING $NODO_ACTUAL to SECONDARY
+exec_informix onmode -d secondary clinica
+sleep 5
+exec_informix onstat - | grep -w "Read-Only (Sec)" > /dev/null
+error_handling FAILED SETTING $NODO_ACTUAL to SECONDARY CODE:38
+sleep 5
+exec_informix onstat -g dri | grep -w "HDR Secondary  on" > /dev/null
+error_handling FAILED $NODO_ACTUAL NOT SYNCING WITH $NODO_SECUNDARIO CODE:39
+logdis ALLOWING ACCESS TO INFORMIX at $NODO_SECUNDARIO
+ssh root@$NODO_SECUNDARIO cp -pf /var/home/permisos/concedido /var/home/permisos/permclin > /dev/null
+logdis DISABLING ACCESS TO INFORMIX at $NODO_ACTUAL
+cp -pf /var/home/permisos/denegado /var/home/permisos/permclin
+logdis INFORMIX NODES SWITCHED SUCCESSFULLY
+
+}
+
+
+NETWORK_STATUS(){
+
+        echo "${NODO_ACTUAL} HAS :"
+        ifconfig -a | egrep "$IFACE_PRIMARIO|$IFACE_SECUNDARIO" | while read IFACE ; do
+        case $(echo $IFACE | grep "\<UP," | cut -d " " -f1 | sed 's/:$//') in
+        $IFACE_PRIMARIO) echo "PRIMARY INTERFACE $IP_PRIMARIA : $IFACE_PRIMARIO"
+;;
+        $IFACE_SECUNDARIO) echo "SECONDARY INTERFACE $IP_SECUNDARIA : $IFACE_SECUNDARIO"
+;;
+esac
+done
+        echo "${NODO_SECUNDARIO} HAS :"
+        ssh root@$NODO_SECUNDARIO ifconfig -a | egrep "$IFACE_PRIMARIO|$IFACE_SECUNDARIO" | while read IFACE ; do > /dev/null
+        case $(echo $IFACE | grep "\<UP," | cut -d " " -f1 | sed 's/:$//') in
+        $IFACE_PRIMARIO) echo "PRIMARY INTERFACE $IP_PRIMARIA : $IFACE_PRIMARIO"
+;;
+        $IFACE_SECUNDARIO) echo "SECONDARY INTERFACE $IP_SECUNDARIA : $IFACE_SECUNDARIO"
+;;
+esac
+done
+
+}
+
+
+INFORMIX_STATUS(){
+        
+        echo "${NODO_ACTUAL} HAS INFORMIX IN MODE:"
+        exec_informix onstat - > $TEMPFILE
+        cat $TEMPFILE | sed '/^$/d' | tail -1
+        echo
+        echo
+        echo "${NODO_ACTUAL} SYNC STATUS:"
+        exec_informix onstat -g dri  > $TEMPFILE
+        tail +5 $TEMPFILE
+        rm -f $TEMPFILE
+        echo "${NODO_SECUNDARIO} HAS INFORMIX IN MODE:"
+        S_exec_informix onstat - > $TEMPFILE
+        cat $TEMPFILE | sed '/^$/d' | tail -1
+        echo
+        echo
+        echo "${NODO_SECUNDARIO} SYNC STATUS:"
+        S_exec_informix onstat -g dri  > $TEMPFILE
+        tail +5 $TEMPFILE
+        rm -f $TEMPFILE
+        exit 0
+}
+
+
+SETUP(){
+
+logdis  CHECKING IFACES in $NODO_ACTUAL
+ifconfig -a | grep -w $IFACE_PRIMARIO > /dev/null
+if [ $? -ne 0 ]; then
+        logdis  CONFIGURING $IFACE_PRIMARIO at $NODO_ACTUAL with $IP_PRIMARIA
+        ifconfig  $IFACE_PRIMARIO plumb $IP_PRIMARIA netmask $NETMASK down
+        error_handling FAILED CONFIGURING $IFACE_PRIMARIO at $NODO_ACTUAL with $IP_PRIMARIA CODE:40
+fi
+
+ifconfig -a | grep -w $IFACE_SECUNDARIO > /dev/null
+if [ $? -ne 0 ]; then
+        logdis  CONFIGURING $IFACE_SECUNDARIO at $NODO_ACTUAL with $IP_SECUNDARIA
+        ifconfig  $IFACE_SECUNDARIO plumb $IP_SECUNDARIA netmask $NETMASK down 
+        error_handling FAILED CONFIGURING $IFACE_SECUNDARIO at $NODO_ACTUAL with $IP_SECUNDARIA CODE:41
+fi
+
+logdis  CHECKING IFACES in $NODO_SECUNDARIO
+ssh root@$NODO_SECUNDARIO ifconfig -a | grep -w $IFACE_PRIMARIO > /dev/null
+if [ $? -ne 0 ]; then
+        logdis  CONFIGURING $IFACE_PRIMARIO at $NODO_SECUNDARIO with $IP_PRIMARIA
+        ssh root@$NODO_SECUNDARIO ifconfig  $IFACE_PRIMARIO plumb $IP_PRIMARIA netmask $NETMASK down > /dev/null
+        error_handling FAILED CONFIGURING $IFACE_PRIMARIO at $NODO_SECUNDARIO with $IP_PRIMARIA CODE:42
+fi
+
+ssh root@$NODO_SECUNDARIO ifconfig -a | grep -w $IFACE_SECUNDARIO > /dev/null
+if [ $? -ne 0 ]; then
+        logdis  CONFIGURING $IFACE_SECUNDARIO at $NODO_ACTUAL with $IP_SECUNDARIA
+        ssh root@$NODO_SECUNDARIO ifconfig  $IFACE_SECUNDARIO plumb $IP_SECUNDARIA netmask $NETMASK down > /dev/null
+        error_handling FAILED CONFIGURING $IFACE_SECUNDARIO at $NODO_ACTUAL with $IP_SECUNDARIA CODE:43
+fi
+
+logdis ALL INTERFACES EXISTS
+
+}
+
+
+###########EJECUCION###########
+
+
+if [ "$NODO_ACTUAL" != $(hostname) ];then
+logdis HOSTNAME NOT THE SAME AS NODE VAR
+exit
+fi
+
+/usr/sbin/ping $NODO_SECUNDARIO 4 > /dev/null
+error_handling $NODO_SECUNDARIO NOT RESPONDING CODE:29
+
+
+SETUP
+
+
+case $1 in
+        network | -n ) NETWORK
+        exit
+;;
+        switch )
+        exec_informix onstat - | grep -w On-"Line (Prim)" > /dev/null
+        error_handling NODE ISNT PRIMARY, EXECUTE IN PRIMARY CODE:30
+        INFORMIX_PRIM_TO_SEC
+        exit
+;;
+
+        status | -s ) NETWORK_STATUS
+                      INFORMIX_STATUS
+        exit
+;;
+                *) print_uso
+        exit 1
+;;
+esac
+
+
+
+
