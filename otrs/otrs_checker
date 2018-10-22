@@ -58,7 +58,6 @@ test -f $LOCK_FILE
 if [ $? -eq 0 ]; then
 	exit
 fi
-
 ##Fich bloqueo
 echo $$ > $LOCK_FILE
 PROC=$(cat $LOCK_FILE)
@@ -75,14 +74,14 @@ curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -d 'Action=Login' -d 'Lang=es'
 #bucle para evitar overflood de sesiones
 while [ $PROC -eq $$ ] ; do
 curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE "https://cau.aragon.es/index.pl?Action=AgentTicketQueue;QueueID=0;SortBy=Age;OrderBy=Up;View=Small;Filter=Unlocked" 2> /dev/null &
-CURL1=$(pgrep -n curl)
+CURL1=$!
 curl --connect-timeout 5 -k -b $COOKIE -c $COOKIE -o $TEMPFILE2 "https://cau.aragon.es/index.pl?Action=AgentTicketSearch;Subaction=Search;TakeLastSearch=1;SaveProfile=1;Profile=Admin_OTRS" 2> /dev/null &
-CURL2=$(pgrep -n curl)
+CURL2=$!
 
 #kill para evitar cuelgues de curl
 sleep 8
-kill $CURL1
-kill $CURL2
+if [ "$(ps -p $CURL1 > /dev/null; echo $?)" -eq 0 ]; then kill $CURL1; fi 
+if [ "$(ps -p $CURL2 > /dev/null; echo $?)" -eq 0 ]; then kill $CURL2; fi 
 
 
 
@@ -188,4 +187,5 @@ done
 clean_shit
 
 exit
+
 
