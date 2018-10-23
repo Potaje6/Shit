@@ -162,7 +162,7 @@ print_uso
 fi
 
 #solo 1 de los 2 modos puede estar activo, o fichero list o known_hosts
-cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep -- $1 |\
+cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep -i -- $1 |\
 
 #if [ ! -f $LIST_FILE ]; then
 #    touch $LIST_FILE
