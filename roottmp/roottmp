@@ -1,7 +1,7 @@
 #!/bin/ksh
 ##D.Molina
 ##Script para dar permisos root (sudo) a cualquier usuario
-##No lo intentes romper, esta hecho para gente con cabeza, no para paletos
+##No lo intentes romper, esta hecho para gente con cabeza, no para paletos, ya tiene mas que suficientes comentarios para ser by me 100%
 ##HAPPY DEBUGGING!
 
 
@@ -119,7 +119,7 @@ else
 fi
 }
 
-#Hanz, Get ze Flammenwerfer
+#Hanz, get ze Flammenwerfer
 order66(){
     echo "Te vas a fornicar todos los roots temporales de todas las concesiones que hay en el fichero ${ACTIVE_FILE}, estas seguro de querer ejecutar la orden 66? (do it faggot)"
     read SUREBRO
@@ -161,7 +161,7 @@ cat <<EOF
         --help muestra este mensaje de ayuda
         -u usuario al que aplicar permiso sudo
         -U usuario con el que tirar el ssh -o StrictHostKeyChecking=no -n ${DEBUG} para acceder como root con sudo, default $REMOTE_LUSER
-        --date fecha que expirara la concesion de sudo, en formato date +%Y%m%d. Elegir esta opcion o --time, no las 2. default $FECHA
+        --date fecha que expirara la concesion de sudo, en formato date +%Y%m%d. Elegir esta opcion o --time, no las 2. default $FECHA (una semana)
         --time dias que durara la concesion. Elegir esta opcion o --date, no las 2. Por defecto expira en una semana.
         --order66 borra todas las concesiones de sudo dadas en la maquina
         --check fuerza la funcion de chequear 

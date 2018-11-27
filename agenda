@@ -1,6 +1,6 @@
 #!/bin/ksh
 ##Daniel Molina
-##Script para hacer recordatorios por consola
+##Script para hacer recordatorios por notificacion flotante y con ventana
 
 export DISPLAY=:0
 BASEDIR=$(dirname "$0")
@@ -21,7 +21,7 @@ ICO=/home/dmolinao/scripts/parametros/pepesuicide.jpg
 
 print_uso(){
 cat <<EOF
-Script para hacer recordatorios por todas las consolas para evitar olvidos causados por mi alzheimer
+Script para hacer recordatorios por notificacion flotante y con ventana
 Usa el fichero en parametros/agenda donde se ejecuta para crear recordatorios
 Usa -a para meterlo al final del fichero
 Con el formato de "2016-08-05/08:38 RECORDATORIO"
@@ -129,6 +129,7 @@ until [ $z -eq $i ] ; do
                  #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
                 zenity --question --text="${TAREA[$z]} planificado para  ${PLANIFICADO_RAW[$z]}\n\n5 minuticos mas?" --default-cancel  --title "POTAGENDA" > /dev/null 2>&1
                 if [ $? -eq 0 ]; then
+                #No lo aplazara si el recordatorio contiene "/", paso de corregirlo, no pongas putas barras surnormal
                  sed -i "s/$(echo ${PLANIFICADO_RAW[$z]} | sed 's/\//\\\//') ${TAREA[$z]}/$(date -d "+5 minutes" +%Y-%m-%d\/%H:%M | sed 's/\//\\\//') ${TAREA[$z]}/" $AGENDA
                  notify-send -i $ICO POTAGENDA "${TAREA[$z]} APLAZADO 5 MINUTOS" > /dev/null 2>&1
                 fi

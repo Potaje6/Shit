@@ -34,6 +34,7 @@ Script para hacer backups
 -p ejecutar solo la funcion de purgar
 -s directorio a descargar del servidor remoto Default:$SOURCE
 -h mostrar este mensaje
+-np no ejecutar la funcion de purgado de backups viejos al final del script
 
 EOF
 }
