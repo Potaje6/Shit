@@ -1,0 +1,66 @@
+#!/bin/ksh
+#Script to search songs and get lyrics by terminal
+##Srsly, why u do dis, get cancer fucktard
+#test number
+re='^[0-9]+$'
+
+TMP_FILE=/var/tmp/$$
+
+if [ -z "$@" ]; then
+echo "WTF u wanna search dude?"
+exit 
+fi
+
+##SEARCH##
+SEARCH=$(echo $@|tr -s [:blank:] \+)
+
+curl -s https://search.azlyrics.com/search.php?q=$SEARCH | grep "target=\"_blank" |tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | while read NUMBER LINK NAME; do 
+i=$(($i+1))
+
+echo $i $NAME 
+LINK[$i]=$LINK
+NAME[$i]=$NAME
+done
+
+echo "Select desired song"
+
+read CHOICE
+
+
+
+if [ -z "$CHOICE" ]; then
+echo "U dont know how to read bruh?"
+exit 
+fi
+
+if ! [[ "$CHOICE" =~ $re ]] ; then
+   echo "U dont know how to read bruh?"
+   exit
+fi
+
+if [ "$CHOICE" -gt $i ]; then
+echo "U dont know how to read bruh?"
+exit 
+fi
+
+clear
+echo "###${NAME[$CHOICE]}"
+echo
+
+##No result with curl or wget
+lynx -source ${LINK[$CHOICE]} > $TMP_FILE
+
+#Pleistoceno mode
+#get line range of song
+LINE_START=$(grep -n "Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that." $TMP_FILE | cut -f 1 -d ":")	
+LINE_END=$(grep -n "MxM banner" $TMP_FILE | cut -f 1 -d ":")
+LINE_START=$(($LINE_START+1))
+LINE_END=$(($LINE_END-5))
+#Do it faggot
+sed -n ${LINE_START},${LINE_END}p /var/tmp/$$ | sed 's/<br>//g' | sed 's/<i>//g' | sed 's/<\/i>//g' | sed 's/&quot;/"/g'
+
+rm $TMP_FILE
+
+
+
+
