@@ -1,0 +1,50 @@
+#!/bin/bash
+#Split origins from a file zone to other independent zone files
+#Los hombres de verdad hacen cambios en el dns sin chequear las zonas recien creadas, echale huevos mamon
+z=1
+ZONE_FILE=$1
+
+SERIAL=$(echo $(date  +%Y%m%d)40)
+
+gen_heading(){
+cat <<EOF
+;/var/namedb/db.$ORIG_1
+;\$TTL 14400
+\$TTL 300
+$ORIG_1      IN      SOA     calatayud.aragon.es. root.calatayud.aragon.es. (
+                        $SERIAL
+                        300
+                        7200
+                        1209600
+                        86400 )
+;
+
+EOF
+
+
+
+}
+
+NUM_ORIGS=$(grep ^\$ORIGIN $ZONE_FILE | cut -f 2 -d " " | tr "\n" " " | wc -w)
+ALL_ORIGS=$(grep ^\$ORIGIN $ZONE_FILE | cut -f 2 -d " " | tr "\n" " ")
+
+ZONE_ROOT=$(grep "IN.*SOA" $ZONE_FILE | awk '{print$1}')
+
+mkdir $ZONE_ROOT
+sed -n '/^;/,/\$ORIGIN/p' $ZONE_FILE | head -n -1 > $ZONE_ROOT/db.$ZONE_ROOT
+
+until [ $z -gt $NUM_ORIGS ]; do
+
+ORIG_1=$(echo $ALL_ORIGS |cut -f $z -d " ")
+ORIG_2=$(echo $ALL_ORIGS |cut -f $(expr $z + 1) -d " ")
+
+sed -n "/ORIGIN $ORIG_1/,/ORIGIN $ORIG_2/p" $ZONE_FILE > $ZONE_ROOT/db.$ORIG_1
+
+z=$(($z+1))
+if [ $z -ne $NUM_ORIGS ]; then
+	head -n -1 $ZONE_ROOT/db.$ORIG_1 > asdf
+	gen_heading > $ZONE_ROOT/db.$ORIG_1
+	tail -n +2 asdf >> $ZONE_ROOT/db.$ORIG_1
+fi
+done
+

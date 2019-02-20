@@ -61,6 +61,3 @@ sed -n ${LINE_START},${LINE_END}p /var/tmp/$$ | sed 's/<br>//g' | sed 's/<i>//g'
 
 rm $TMP_FILE
 
-
-
-
