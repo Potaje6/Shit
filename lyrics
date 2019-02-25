@@ -5,6 +5,16 @@
 re='^[0-9]+$'
 
 TMP_FILE=/var/tmp/$$
+TMP_FILE_PARSED=/var/tmp/${$}_final
+
+trap force_exit SIGINT SIGTERM
+
+
+force_exit(){
+        rm -f $TMP_FILE
+        rm -f $TMP_FILE_PARSED
+        exit 
+}
 
 if [ -z "$@" ]; then
 echo "WTF u wanna search dude?"
@@ -44,11 +54,11 @@ exit
 fi
 
 clear
-echo "###${NAME[$CHOICE]}"
+echo "###${NAME[$CHOICE]}" >> $TMP_FILE_PARSED
 echo
 
 ##No result with curl or wget
-lynx -source ${LINK[$CHOICE]} > $TMP_FILE
+lynx -source ${LINK[$CHOICE]} >> $TMP_FILE
 
 #Pleistoceno mode
 #get line range of song
@@ -57,7 +67,9 @@ LINE_END=$(grep -n "MxM banner" $TMP_FILE | cut -f 1 -d ":")
 LINE_START=$(($LINE_START+1))
 LINE_END=$(($LINE_END-5))
 #Do it faggot
-sed -n ${LINE_START},${LINE_END}p /var/tmp/$$ | sed 's/<br>//g' | sed 's/<i>//g' | sed 's/<\/i>//g' | sed 's/&quot;/"/g'
+sed -n ${LINE_START},${LINE_END}p /var/tmp/$$ | sed 's/<br>//g' | sed 's/<i>//g' | sed 's/<\/i>//g' | sed 's/&quot;/"/g' >> $TMP_FILE_PARSED
+less $TMP_FILE_PARSED
 
+rm $TMP_FILE_PARSED
 rm $TMP_FILE
 
