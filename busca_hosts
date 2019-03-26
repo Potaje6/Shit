@@ -12,6 +12,7 @@ bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setaf 1)
 yellow=$(tput setaf 3)
+green=$(tput setaf 2)
 color=red
 HORA=+%Y-%m-%d--%H:%M:%S
 EXEC_DIR=$(dirname $0)
@@ -33,10 +34,20 @@ else
 fi
 }
 
+
 faggot(){
 z=$(($z+1))
 if [ $z -eq 6 ]; then z=1; fi
 color=$(tput setaf ${z})
+}
+
+#Porque los que amañan concursos publicos tambien merecen sus colores corporativos ;)
+ieci(){
+if (( $i % 2 )); then
+    color=$normal
+else
+    color=$green
+fi
 }
 
 ##Captura de salida
@@ -129,6 +140,9 @@ shift
 shift
 ;;
 --faggot) MODE=faggot
+shift
+;;
+--ieci) MODE=ieci
 shift
 ;;
 -v) DEBUG=-v
