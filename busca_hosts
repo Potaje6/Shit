@@ -5,7 +5,7 @@
 ##Require ksh
 
 i=0
-LUSER=sistemas
+LUSER=nologin
 x=1
 z=0
 bold=$(tput bold)
@@ -77,6 +77,7 @@ cat <<EOF
         -v verbose mode
         -u user
         -r root
+        -a admin
         --nolog do not log access
         --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
@@ -137,6 +138,9 @@ shift
 shift
 ;;
 -r) LUSER=root
+shift
+;;
+-a) LUSER=admin
 shift
 ;;
 --faggot) MODE=faggot
