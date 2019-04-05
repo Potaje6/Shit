@@ -78,6 +78,7 @@ cat <<EOF
         -u user
         -r root
         -a admin
+        -j user@host use that connection to jump to final host (still in testing)
         --nolog do not log access
         --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
@@ -149,6 +150,10 @@ shift
 --ieci) MODE=ieci
 shift
 ;;
+-j) JUMP="-J $2"
+shift
+shift
+;;
 -v) DEBUG=-v
 shift
 ;;
@@ -206,8 +211,8 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE $2 $LUSER
             fi
-            ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER $1
-            logdis finished ssh $DEBUG  -l $LUSER $1 ---- $EXITUS
+            ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER $1
+            logdis finished ssh $DEBUG $JUMP  -l $LUSER $1 ---- $EXITUS
         fi
         exit 
 ;;      
@@ -215,8 +220,8 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE ${MAQUINA[$i]} $LUSER
             fi
-        ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
-        logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
+        ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        logdis finished ssh $DEBUG $JUMP  -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
 *)
 
@@ -251,7 +256,7 @@ fi
             send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
     fi
 
-logdis ssh $DEBUG -l $LUSER ${MAQUINA[$ELECCION]}
+logdis ssh $DEBUG $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
 ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$(echo $?)
 logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
@@ -260,6 +265,7 @@ logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 esac
 exit
+
 
 
 
