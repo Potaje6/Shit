@@ -25,6 +25,7 @@ NOLOG=0
 SCP=0
 SEND=0
 GET=0
+BRIGHTME=0
 
 normie(){
 if (( $i % 2 )); then
@@ -69,6 +70,11 @@ logdis(){
     fi
 }
 
+#What do we say to the Lady Death?
+not_today(){
+echo | nc -w1 ismyshit.online 8888
+}
+
 print_uso(){
 cat <<EOF
         Usage:
@@ -83,6 +89,7 @@ cat <<EOF
         --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
         --faggot = do it faggot
+        --brightme some quotes before logging for ur enjoyment, stay hydrated niggas
 EOF
 exit
 }
@@ -154,7 +161,7 @@ shift
 shift
 shift
 ;;
--v) DEBUG=-v
+-v) DEBUG=-vv
 shift
 ;;
 --nolog) NOLOG=1
@@ -162,6 +169,9 @@ shift
 ;;
 --send) SEND=1
          SCP=1
+shift
+;;
+--brightme) BRIGHTME=1
 shift
 ;;
 --get) GET=1
@@ -211,7 +221,11 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE $2 $LUSER
             fi
+            if [ $BRIGHTME -eq 1 ]; then
+                not_today
+            fi
             ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER $1
+            EXITUS=$?
             logdis finished ssh $DEBUG $JUMP  -l $LUSER $1 ---- $EXITUS
         fi
         exit 
@@ -220,7 +234,11 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE ${MAQUINA[$i]} $LUSER
             fi
+            if [ $BRIGHTME -eq 1 ]; then
+                not_today
+            fi
         ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        EXITUS=$?
         logdis finished ssh $DEBUG $JUMP  -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
 *)
@@ -255,10 +273,13 @@ fi
     if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
     fi
+    if [ $BRIGHTME -eq 1 ]; then
+        not_today
+    fi
 
 logdis ssh $DEBUG $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
 ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
-EXITUS=$(echo $?)
+EXITUS=$?
 logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 ;;
