@@ -20,12 +20,14 @@ EXEC_NAME=$(basename $0)
 LOG_DIR=$EXEC_DIR/logs
 LOG_FILE=$LOG_DIR/connections
 LIST_FILE=$EXEC_DIR/list
+PORT=22
 MODE=normie
 NOLOG=0
 SCP=0
 SEND=0
 GET=0
 BRIGHTME=0
+
 
 normie(){
 if (( $i % 2 )); then
@@ -70,7 +72,7 @@ logdis(){
     fi
 }
 
-#What do we say to the Lady Death?
+#What do we say to the god of death?
 not_today(){
 echo | nc -w1 ismyshit.online 8888
 }
@@ -79,12 +81,13 @@ print_uso(){
 cat <<EOF
         Usage:
         ./script [-h|-v|-u|-r] string_to_grep
-        This shit logs all ur activity for the NSA in $LOG_FILE
+        This shit logs all ur activity for the NSA in $LOG_FILE (if present)
         -v verbose mode
         -u user
         -r root
         -a admin
         -j user@host use that connection to jump to final host (still in testing)
+        -p port
         --nolog do not log access
         --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
@@ -96,18 +99,18 @@ exit
 
 #send stuff
 send_files(){
-    scp $DEBUG $RECUSIVE $1 $3@$2:
+    scp $DEBUG -P $PORT $RECUSIVE $1 $3@$2:
     EXITUS=$?
-    logdis finished scp $DEBUG $RECUSIVE $1 $3@$2: ---- $EXITUS
+    logdis finished scp $DEBUG -P $PORT $RECUSIVE $1 $3@$2: ---- $EXITUS
     exit $EXITUS
 
 }
 
 #get stuff
 get_files(){
-    scp $DEBUG $RECUSIVE $3@$2:$1 .
+    scp $DEBUG -P $PORT $RECUSIVE $3@$2:$1 .
     EXITUS=$?
-    logdis finished scp $DEBUG $RECUSIVE $3@$2:$1 . ---- $EXITUS
+    logdis finished scp $DEBUG -P $PORT $RECUSIVE $3@$2:$1 . ---- $EXITUS
     exit $EXITUS
 
 }
@@ -158,6 +161,10 @@ shift
 shift
 ;;
 -j) JUMP="-J $2"
+shift
+shift
+;;
+-p) PORT="$2"
 shift
 shift
 ;;
@@ -224,9 +231,11 @@ case $i in
             if [ $BRIGHTME -eq 1 ]; then
                 not_today
             fi
-            ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER $1
+            nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
+            logdis ssh $DEBUG -p $PORT $JUMP -o -l $LUSER $1
+            ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER $1
             EXITUS=$?
-            logdis finished ssh $DEBUG $JUMP  -l $LUSER $1 ---- $EXITUS
+            logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER $1 ---- $EXITUS
         fi
         exit 
 ;;      
@@ -237,9 +246,11 @@ case $i in
             if [ $BRIGHTME -eq 1 ]; then
                 not_today
             fi
-        ssh $DEBUG $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        nc $DEBUG -w 3 -z ${MAQUINA[$i]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
+        logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
+        ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
         EXITUS=$?
-        logdis finished ssh $DEBUG $JUMP  -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
+        logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
 *)
 
@@ -250,8 +261,8 @@ re='^[0-9]+$'
 read  ELECCION
 
 if [ -z "$ELECCION" ]; then
-echo "U dont know how to read bruh?"
-exit 
+    echo "U dont know how to read bruh?"
+    exit
 fi
 
 if ! [[ "$ELECCION" =~ $re ]] ; then
@@ -260,8 +271,8 @@ if ! [[ "$ELECCION" =~ $re ]] ; then
 fi
 
 if [ "$ELECCION" -gt $i ]; then
-echo "U dont know how to read bruh?"
-exit 
+    echo "U dont know how to read bruh?"
+    exit 
 fi
 
 
@@ -270,23 +281,19 @@ fi
 #    mkdir -p $LOG_DIR
 #fi
 
-    if [ $SCP -eq 1 ]; then
-            send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
-    fi
-    if [ $BRIGHTME -eq 1 ]; then
-        not_today
-    fi
-
-logdis ssh $DEBUG $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
-ssh $DEBUG -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
+if [ $SCP -eq 1 ]; then
+    send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
+fi
+if [ $BRIGHTME -eq 1 ]; then
+    not_today
+fi
+nc $DEBUG -w 3 -z ${MAQUINA[$ELECCION]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
+logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
+ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$?
-logdis finished ssh $DEBUG  -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
+logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 ;;
 
 esac
 exit
-
-
-
-
