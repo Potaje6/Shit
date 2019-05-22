@@ -74,7 +74,9 @@ logdis(){
 
 #What do we say to the god of death?
 not_today(){
-echo | nc -w1 ismyshit.online 8888
+if [ $BRIGHTME -eq 1 ]; then
+    echo | nc -w1 ismyshit.online 8888              
+fi
 }
 
 print_uso(){
@@ -228,9 +230,7 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE $2 $LUSER
             fi
-            if [ $BRIGHTME -eq 1 ]; then
-                not_today
-            fi
+            not_today
             nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
             logdis ssh $DEBUG -p $PORT $JUMP -o -l $LUSER $1
             ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER $1
@@ -243,9 +243,7 @@ case $i in
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE ${MAQUINA[$i]} $LUSER
             fi
-            if [ $BRIGHTME -eq 1 ]; then
-                not_today
-            fi
+            not_today
         nc $DEBUG -w 3 -z ${MAQUINA[$i]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
         logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
         ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
@@ -284,9 +282,7 @@ fi
 if [ $SCP -eq 1 ]; then
     send_or_get $SCP_FILE ${MAQUINA[$ELECCION]} $LUSER
 fi
-if [ $BRIGHTME -eq 1 ]; then
-    not_today
-fi
+not_today
 nc $DEBUG -w 3 -z ${MAQUINA[$ELECCION]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
 logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
 ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}

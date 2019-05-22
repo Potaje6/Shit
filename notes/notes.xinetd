@@ -1,0 +1,12 @@
+service notes
+{
+    disable         = no
+    port            = 666
+    socket_type     = stream
+    per_source      = UNLIMITED
+    protocol        = tcp
+    wait            = no
+    user            = potaje
+    server          = /apps/notes/notes
+    type            = unlisted
+}
