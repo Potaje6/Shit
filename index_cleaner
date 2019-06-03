@@ -1,0 +1,21 @@
+#!/bin/ksh
+##Potaje6
+##Lazy script to delete indexes older than X days
+##It could be much more useful in a decent environment by just adding paramaters but i prefer to leave it as it is
+#curl -X GET 'grasa:9200/_cat/indices?v'| grep i77-* | sort -r | awk '{ print $3 }'
+#date +%Y%m%d
+#curl -X GET 'grasa:9200/_cat/indices?v'| grep i77-* | sort -r | awk '{ print $3 }' | sed 's/i77-//g' | tr -d \.
+THRESHOLD=90
+ELASTIHOST=grasa
+EPOCH90DAYS=$(date -d "$THRESHOLD days ago" +%s)
+curl -X GET "$ELASTIHOST:9200/_cat/indices?v" 2>/dev/null |\
+grep i77-* |\
+sort -r |\
+awk '{ print $3 }' |\
+
+while read INDEX ; do INDEX_DATE=$(echo $INDEX|sed 's/i77-//g' | tr \. /) EPOCHINDEX=$(date -d "$INDEX_DATE" +%s)
+if [ $EPOCH90DAYS -gt $EPOCHINDEX ]; then
+curl -X DELETE "http://$ELASTIHOST:9200/$INDEX"
+
+fi
+; done
