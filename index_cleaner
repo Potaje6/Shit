@@ -1,20 +1,53 @@
 #!/bin/ksh
 ##Potaje6
-##Lazy script to delete indexes older than X days
-##It could be much more useful in a decent environment by just adding paramaters but i prefer to leave it as it is
+##Lazy script to delete indexes of elasticsearch older than X days
+##ToDo add some testing to make sure that numeric vars are numeric and anyd dry-run mode
 #curl -X GET 'grasa:9200/_cat/indices?v'| grep i77-* | sort -r | awk '{ print $3 }'
 #date +%Y%m%d
 #curl -X GET 'grasa:9200/_cat/indices?v'| grep i77-* | sort -r | awk '{ print $3 }' | sed 's/i77-//g' | tr -d \.
 THRESHOLD=90
 ELASTIHOST=grasa
-EPOCH90DAYS=$(date -d "$THRESHOLD days ago" +%s)
+EPOCHDAYS=$(date -d "$THRESHOLD days ago" +%s)
+PREFIX=grasa-
+print_uso(){
+cat <<EOF
+Script para hacer backups
+-d threshold of days, indexes with date in the name older than that amout will be deleted. Default $THRESHOLD
+-h elasticsearch host to work with. Default $ELASTIHOST
+-p pattern of the indexes for example grasa-2019/04/30, pattern will be "grasa-" with the hyphen too. Default $PREFIX
+EOF
+}
+
+##Get in, we're France!
+while [ $# -gt 0 ];
+do
+        case $1 in
+        "-d") THRESHOLD=$2
+        shift
+;;
+        "-h") ELASTIHOST="$2"
+        shift
+;;
+        "-p") PREFIX=$2
+        shift
+;;
+        "--help") print_uso
+        exit
+;;
+        *)
+        shift
+esac
+done
+
+
 curl -X GET "$ELASTIHOST:9200/_cat/indices?v" 2>/dev/null |\
-grep i77-* |\
+grep $PREFIX* |\
 sort -r |\
 awk '{ print $3 }' |\
 
-while read INDEX ; do INDEX_DATE=$(echo $INDEX|sed 's/i77-//g' | tr \. /) EPOCHINDEX=$(date -d "$INDEX_DATE" +%s)
-if [ $EPOCH90DAYS -gt $EPOCHINDEX ]; then
+while read INDEX ; do INDEX_DATE=$(echo $INDEX|sed "s/$PREFIX//g" | tr \. /) EPOCHINDEX=$(date -d "$INDEX_DATE" +%s)
+if [ $EPOCHDAYS -gt $EPOCHINDEX ]; then
+
 curl -X DELETE "http://$ELASTIHOST:9200/$INDEX"
 
 fi
