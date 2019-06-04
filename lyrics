@@ -121,6 +121,28 @@ while true ; do
 done
 }
 
+cmus_mode(){
+SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+
+OLD_SONG=$SONG
+OLD_ARTIST=$ARTIST
+search -s $SONG $ARTIST
+
+##Get in, we're invading france - budget mode
+while true ; do
+	SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+	ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+	if [ ! "$SONG" == "$OLD_SONG" ] || [ ! "$ARTIST" == "$OLD_ARTIST" ];then
+		clear
+		search -s $SONG $ARTIST
+		OLD_SONG=$SONG
+		OLD_ARTIST=$ARTIST
+	fi
+	sleep 5
+done
+}
+
 if [ -z "$@" ]; then
 echo "WTF u wanna search dude?"
 exit 
@@ -137,7 +159,8 @@ do
 print_uso
 ;;
 --spotify) spotify_mode
-
+;;
+--cmus) cmus_mode
 ;;
 *) break
 ;;
