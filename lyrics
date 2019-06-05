@@ -24,6 +24,12 @@ CHOICE=0
 
 trap force_exit SIGINT SIGTERM
 
+print_uso(){
+	./lyrics [--spotify/--cmus] Song title
+	--spotify to search lyrics of song currently playing on spotify, updates after changing song
+	--cmus to search lyrics of song currently playing on cmus, updates after changing song
+}
+
 force_exit(){
         rm -f $TMP_FILE
         rm -f $TMP_FILE_PARSED
@@ -144,7 +150,7 @@ done
 }
 
 if [ -z "$@" ]; then
-echo "WTF u wanna search dude?"
+print_uso
 exit 
 fi
 
