@@ -25,9 +25,11 @@ CHOICE=0
 trap force_exit SIGINT SIGTERM
 
 print_uso(){
+	cat <<EOF
 	./lyrics [--spotify/--cmus] Song title
 	--spotify to search lyrics of song currently playing on spotify, updates after changing song
 	--cmus to search lyrics of song currently playing on cmus, updates after changing song
+EOF
 }
 
 force_exit(){
