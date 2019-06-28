@@ -4,6 +4,14 @@
 
 LIST=$HOME/list
 LUSER=nologin
+PORT=22
+bold=$(tput bold)
+normal=$(tput sgr0)
+red=$(tput setaf 1)
+yellow=$(tput setaf 3)
+green=$(tput setaf 2)
+
+
 
 SSH_COMMAND="ssh -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
 
@@ -18,16 +26,22 @@ main(){
 MAQUINA=$1
 shift
 
-nc -z -w 5 $MAQUINA 22 &> /dev/null
+nc -z -w 5 $MAQUINA $PORT 2>&1 /dev/null
 if [ $? -ne 0 ] ; then
 #        MAQUINA_GES="${MAQUINA}-ges"
-        echo $MAQUINA failed
-        echo "--------"
-else
-        echo $MAQUINA Worked
-        echo "--------"
-        $SSH_COMMAND ${LUSER}@$MAQUINA "$@"
+        echo "$MAQUINA ${red}Error, port not open${normal} "
         echo "########"
+else
+
+        echo "V--- ${bold}$MAQUINA${normal} ---V"
+        $SSH_COMMAND ${LUSER}@$MAQUINA "$@"
+        if [ $? -ne 0 ]; then
+                echo "$MAQUINA ${red}Error${normal} "
+                echo "########"
+        else
+                echo "$MAQUINA ${green}Success${normal}"
+                echo "########"
+        fi
 fi
 
 ##Good old times on ast
@@ -76,6 +90,10 @@ shift
 shift
 ;;
 -u) LUSER=$2
+shift
+shift
+;;
+-P) PORT=$2
 shift
 shift
 ;;
