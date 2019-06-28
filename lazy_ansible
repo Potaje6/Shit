@@ -1,65 +1,99 @@
-#!/bin/bash
+#!/bin/ksh
+##Potaje6
+#Script used in a much simpler way in my old times working for the government, now adapted and optimized to work in other clients
 
-##Run it with the following function for extra niggerotic results putting the target hosts in $HOME/list
-#lazy_ansible(){
-#while read grasa ; do $HOME/scripts/lazy_ansible -h $grasa $@ ; done < $HOME/list
-#}
+LIST=$HOME/list
+LUSER=nologin
+
+SSH_COMMAND="ssh -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+
+lets_roll(){
+grep -v ^# $LIST | while read grasa ; do main $grasa $COMMANDS ; done
+exit
+}
+
+
+
+main(){
+MAQUINA=$1
+shift
+
+nc -z -w 5 $MAQUINA 22 &> /dev/null
+if [ $? -ne 0 ] ; then
+#        MAQUINA_GES="${MAQUINA}-ges"
+        echo $MAQUINA failed
+        echo "--------"
+else
+        echo $MAQUINA Worked
+        echo "--------"
+        $SSH_COMMAND ${LUSER}@$MAQUINA "$@"
+        echo "########"
+fi
+
+##Good old times on ast
+#nc -z -w 5 $MAQUINA_GES 22 &> /dev/null
+#if [ $? -ne 0 ] ; then
+#        echo $MAQUINA failed
+#else
+#        echo $MAQUINA Worked
+#        echo "--------"
+#        $SSH_COMMAND ${LUSER}@$MAQUINA_GES "$@"
+#        echo "########"
+#fi
+}
 
 
 print_uso(){
         cat <<EOF
-./lazy_ansible -h $host $command
--h host = host
-command
+./lazy_ansible [commands]
+Este script lanza el comando que le pongas a una lista de hosts 
+-l File with host list. Default $(echo "$LIST")
+-r SSH as root
+-u User to connect with ssh. Default $(echo "$LUSER")
+-p this 1 is tricky, password to connect to servers, for those cases where you don't have trusted RSAs, be careful where you use this option, it has to be on plain text as it is passed to sshpass, dont be retard, type a space before this execution to not include it in the history
 EOF
+exit
 }
 
 
-LUSER=root
 
 
+if [ $# -eq 0 ];then
+print_uso
+fi
 
-if
-[ $# -eq 0 ]
-        then echo "No parms given"      
-        print_uso
-        exit 3
-else
-        if [ ! "$1" == "-h" ]; then 
-                echo "no host given"
-                print_uso
-                exit 3
-        fi
-        case $1 in
-        "-h") MAQUINA=$2
-        shift
-        shift
+while [ $# -gt 0 ];
+do
+case $1 in
+-h)     
+print_uso
 ;;
-
-#        *)
-#;;        
+-l) LIST=$2
+shift
+shift
+;;
+-r) LUSER=root
+shift
+;;
+-u) LUSER=$2
+shift
+shift
+;;
+-p) 
+SSH_COMMAND="/usr/bin/sshpass -p${2} ssh -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+shift
+shift
+;;
+*) break
+;;
 esac
+done
+
+COMMANDS="$@"
+
+if [ -z $COMMANDS ]; then
+ echo "No commands passed, pass at least 1 command"
+ print_uso
 fi
 
-nc -z -w 5 $MAQUINA 22 &> /dev/null
-if [ $? -ne 0 ] ; then
-        MAQUINA_GES="${MAQUINA}-ges"
-else
-        echo $MAQUINA Worked
-        echo "--------"
-        ssh -o StrictHostKeyChecking=no -n ${LUSER}@$MAQUINA "$@"
-        echo "########"
-        exit
-fi
-
-nc -z -w 5 $MAQUINA_GES 22 &> /dev/null
-if [ $? -ne 0 ] ; then
-        echo $MAQUINA failed
-else
-        echo $MAQUINA Worked
-        echo "--------"
-        ssh -o StrictHostKeyChecking=no -n ${LUSER}@$MAQUINA_GES "$@"
-        echo "########"
-fi
-
-
+lets_roll
