@@ -29,8 +29,8 @@ shift
 nc -z -w 5 $MAQUINA $PORT 2>&1 /dev/null
 if [ $? -ne 0 ] ; then
 #        MAQUINA_GES="${MAQUINA}-ges"
-        echo "$MAQUINA ${red}Error, port not open${normal} "
-        echo "########"
+        echo "$MAQUINA ${red}Error, port not open${normal} " 
+        echo "########" 
 else
 
         echo "V--- ${bold}$MAQUINA${normal} ---V"

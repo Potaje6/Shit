@@ -32,7 +32,7 @@ Uso: ./agenda [--now] [-l/--list] [-e/--edit] [--help] [-a/--add] [-f/--future]
 -l/--list lista todas las tareas del fichero que no se hayan realizado/comentado
 -e/--edit edita el fichero de la agenda
 -a/--add
--f/--future ver las tareas planificadas en el futuro
+-f/--future ver las tareas planificadas en el futuro (sobre todo para debuggear, para ver tareas pendientes utiliza -l)
 --help muestra esta ayuda
 Modo para añadir entrada nueva para vaguermonguers:
 -d/--days +x dias a añadir la entrada de la hora actual
