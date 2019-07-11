@@ -5,6 +5,7 @@
 LIST=$HOME/list
 LUSER=nologin
 PORT=22
+DEBUG=
 bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setaf 1)
@@ -12,8 +13,6 @@ yellow=$(tput setaf 3)
 green=$(tput setaf 2)
 
 
-
-SSH_COMMAND="ssh -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
 
 lets_roll(){
 grep -v ^# $LIST | while read grasa ; do main $grasa $COMMANDS ; done
@@ -65,6 +64,7 @@ Este script lanza el comando que le pongas a una lista de hosts
 -r SSH as root
 -u User to connect with ssh. Default $(echo "$LUSER")
 -p this 1 is tricky, password to connect to servers, for those cases where you don't have trusted RSAs, be careful where you use this option, it has to be on plain text as it is passed to sshpass, dont be retard, type a space before this execution to not include it in the history
+-v debug mode for ssh
 EOF
 exit
 }
@@ -97,8 +97,10 @@ shift
 shift
 shift
 ;;
--p) 
-SSH_COMMAND="/usr/bin/sshpass -p${2} ssh -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+-v) DEBUG=1
+shift
+;;
+-p) PASS="$2"
 shift
 shift
 ;;
@@ -106,6 +108,17 @@ shift
 ;;
 esac
 done
+
+if [ "$DEBUG" -eq 1 ]; then
+        DEBUG=-vv
+fi
+
+if [ -z "$PASS" ]; then
+        SSH_COMMAND="ssh $DEBUG -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+else
+        SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+fi
+
 
 COMMANDS="$@"
 
