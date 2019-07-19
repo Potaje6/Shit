@@ -4,8 +4,11 @@
 ##Disable ssh's know_hosts encryption to use this
 ##Require ksh
 
-i=0
+##V Default user V##
 LUSER=nologin
+##^ Default user ^##
+
+i=0
 x=1
 z=0
 bold=$(tput bold)

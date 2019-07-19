@@ -12,14 +12,10 @@ red=$(tput setaf 1)
 yellow=$(tput setaf 3)
 green=$(tput setaf 2)
 
-
-
 lets_roll(){
 grep -v ^# $LIST | while read grasa ; do main $grasa $COMMANDS ; done
 exit
 }
-
-
 
 main(){
 MAQUINA=$1
@@ -55,7 +51,6 @@ fi
 #fi
 }
 
-
 print_uso(){
         cat <<EOF
 ./lazy_ansible [commands]
@@ -68,9 +63,6 @@ Este script lanza el comando que le pongas a una lista de hosts
 EOF
 exit
 }
-
-
-
 
 if [ $# -eq 0 ];then
 print_uso
@@ -118,7 +110,6 @@ if [ -z "$PASS" ]; then
 else
         SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
 fi
-
 
 COMMANDS="$@"
 

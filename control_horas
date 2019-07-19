@@ -1,0 +1,30 @@
+#!/bin/bash
+##Script to get the hour when i turn on the work pc and when i poweroff it, usually when i go in and when i get out
+##to have some measures of how early/late i get in/out
+##best used as service with systemd
+
+WEEKNUM=$(date +%U)
+HISTORY=/home/dmolinao/scripts/parametros/horas/$WEEKNUM
+
+print_uso(){
+cat <<EOF
+        Usage:
+-b boot/in add a line when in
+-p poweroff/out add a line when poweroff
+EOF
+exit
+}
+
+while [ $# -gt 0 ];
+do
+    case $1 in
+-b) echo "in $(date "+%Y-%m-%d %H:%M")" >> $HISTORY
+exit 0
+;;
+-p) echo "out $(date "+%Y-%m-%d %H:%M")" >> $HISTORY
+exit 0
+;;
+*) break
+;;
+esac
+done

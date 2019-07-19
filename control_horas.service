@@ -1,0 +1,19 @@
+# /lib/systemd/system/control_horas.service
+[Unit]
+Description=Control horas del glorioso PDRO SNCHZ
+After=network.target
+
+[Service]
+Type=simple
+User=dmolinao
+ExecStart=/home/dmolinao/scripts/control_horas -b
+RemainAfterExit=true
+ExecStop=/home/dmolinao/scripts/control_horas -p
+TimeoutSec=30
+#Restart=on-abnormal
+#RestartSec=30
+StartLimitInterval=350
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target reboot.target halt.target shutdown.target poweroff.target
