@@ -2,7 +2,7 @@
 ##Potaje6
 ##Script used in a much simpler way in my old times working in the barcelona public transport generating the zones for each environment
 ##now exapnded with some features to adapt it to more situations
-##This generates zones very raw, check everything before putting it to production or restarting bind, headings and configs might need some tweaks, the records part can be ignored, never gave me any problem
+##This generates reverse zones very raw, check everything before putting it to production or restarting bind, headings and configs might need some tweaks, the records part can be ignored, never gave me any problem
 
 
 SERIAL=$(echo $(date  +%Y%m%d)01)
