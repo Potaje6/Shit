@@ -1,8 +1,10 @@
 #!/bin/ksh
 ##Potaje6
 ##Script used in a much simpler way in my old times working in the barcelona public transport generating the zones for each environment
-##now exapnded with some features to adapt it to more situations
+##now expanded with some features to adapt it to more situations
 ##This generates reverse zones very raw, check everything before putting it to production or restarting bind, headings and configs might need some tweaks, the records part can be ignored, never gave me any problem
+##Feel free to add some constraints to dont process CNAMEs more effectively
+
 
 
 SERIAL=$(echo $(date  +%Y%m%d)01)
@@ -26,7 +28,7 @@ print_uso(){
 cat <<EOF
 Script to generate reverse zones from bind direct zones
 Usage:
-./bind_reverse_generator -d domain
+./bind_reverse_generator [-d domain ] [-m masters] [-o octets] file
 -d domain. Default: $DOMAIN
 -m name of the master servers, for example, localdns would be printed as localdns1 and localdns2 in the authoritative servers. Default $MASTERS
 -o the number of octets that you want to be cutted, 3 = splitted in zones with just the last octet in each. Default $OCTET
