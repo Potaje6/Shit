@@ -1,0 +1,142 @@
+#!/bin/ksh
+##Potaje6
+##Script used in a much simpler way in my old times working in the barcelona public transport generating the zones for each environment
+##now exapnded with some features to adapt it to more situations
+##This generates zones very raw, check everything before putting it to production or restarting bind, headings and configs might need some tweaks, the records part can be ignored, never gave me any problem
+
+
+SERIAL=$(echo $(date  +%Y%m%d)01)
+#DOMAIN=$1
+MASTERS=dns
+OCTET=3
+DOMAIN=area51.gov
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+EXEC_FULL=${EXEC_DIR}/${EXEC_NAME}
+EXEC_TEMP_DIR=${EXEC_DIR}/${EXEC_NAME}.dir
+TEMPFILE=${EXEC_FULL}.tmp
+#TEMPFILE2=${EXEC_FULL}.tmp2
+
+clean(){
+        rm -f $EXEC_TEMP_DIR/*
+        rmdir $EXEC_TEMP_DIR
+}
+
+print_uso(){
+cat <<EOF
+Script to generate reverse zones from bind direct zones
+Usage:
+./bind_reverse_generator -d domain
+-d domain. Default: $DOMAIN
+-m name of the master servers, for example, localdns would be printed as localdns1 and localdns2 in the authoritative servers. Default $MASTERS
+-o the number of octets that you want to be cutted, 3 = splitted in zones with just the last octet in each. Default $OCTET
+EOF
+exit
+}
+
+
+
+gen_heading(){
+cat <<EOF
+;/var/named/db.$1.in-addr.arpa.zone
+;\$TTL 14400
+\$TTL 300
+@      IN      SOA      ${MASTERS}1.${DOMAIN}. ${MASTERS}2.${DOMAIN}. (
+                        $SERIAL
+                        300
+                        7200
+                        1209600
+                        86400 )
+;
+
+EOF
+}
+
+
+while [ $# -gt 1 ];
+do
+        case $1 in
+        "-d") DOMAIN=$2
+        shift
+        shift
+;;
+        "-m") MASTERS=$2
+		shift
+        shift
+;;
+        "-o") OCTET=$2
+                shift
+                shift
+;;
+
+        *)
+        shift
+esac
+done
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];then
+        print_uso
+fi
+
+
+if [ "$OCTET" -gt 3 ] || [ "$OCTET" -lt 1 ]; then
+        echo "Invalid octet selection, must be between 1 and 3"
+        print_uso
+fi
+
+
+##Spaghuetti code because fuck optimization and absurd complex stuff
+octet1(){
+FIELDS=1
+}
+generator1(){
+awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'}
+}
+reverse1(){
+awk -F "." {'print $1'}
+}
+
+octet2(){
+FIELDS=1,2
+}
+generator2(){
+awk -v DOM="$DOMAIN"  {'print $(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'}
+}
+reverse2(){
+awk -F "." {'print $2"."$1'}
+}
+
+octet3(){
+FIELDS=1,2,3
+}
+generator3(){
+awk -v DOM="$DOMAIN"  {'print $NF"\tIN\tPTR\t"$1"."DOM'}
+}
+reverse3(){
+awk -F "." {'print $3"."$2"."$1'}
+}
+
+
+octet$OCTET
+
+
+ZONE_FILE=$1
+
+##And this my friends, is what i call a autentica puta mierda, but it works
+cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | while read range ; do gen_heading $range | tee $(echo $range|cut -f $FIELDS -d .).in-addr.arpa.zone.db;  grep $range $ZONE_FILE | sed 's/\./ /g' > $TEMPFILE; cat $TEMPFILE | generator${OCTET} | grep -v ^\; | tee -a $(echo $range|cut -f $FIELDS -d .).in-addr.arpa.zone.db;  done
+
+##Lazyness protocol ENGAGED
+##ToDo fix the reverses, so it fucking works, for now, generate this part yourself
+#echo
+#echo "##this is a sample of what would look like the config for the zones generated in your master, tweak it to your environment"
+#echo
+#cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | reverse$OCTET | while read range; do
+#
+#cat <<EOF
+#zone "$range.in-addr.arpa" in {
+#type master;
+#file "$range.in-addr.arpa.zone.db";
+#};
+#EOF
+#done
+rm $TEMPFILE

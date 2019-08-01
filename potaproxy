@@ -1,7 +1,16 @@
 #!/bin/bash
 ##edits by Potaje6
 set -e -o pipefail
-trap 'rm -rf -- "$datadir"' EXIT
+trap force_exit SIGINT EXIT
+
+
+force_exit(){
+        rm -rf -- "$datadir" 
+        printf '\e]2;%s\a' "$(hostname) - $(whoami)"
+        exit 3
+}
+
+
 
 spinner()
 {
@@ -90,6 +99,7 @@ main() {
             --incognito \
             --user-data-dir="$datadir" > /dev/null 2>&1 &
         clear
+        printf '\e]2;%s\a' "potaproxy - $host"
         echo "Running proxied $browser with PID $! through $host on port $port"
         #lucecita de mayus parpadea mientras este up
         if [ $(whoami) == "root" ]; then
