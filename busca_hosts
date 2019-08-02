@@ -5,7 +5,7 @@
 ##Require ksh
 
 ##V Default user V##
-LUSER=nologin#
+LUSER=nologin
 #^ Default user ^##
 
 i=0
@@ -98,6 +98,7 @@ cat <<EOF
             -R recursive
         --faggot = do it faggot
         --brightme some quotes before logging for ur enjoyment, stay hydrated niggas
+        --time show time after closing connections
 EOF
 exit
 }
@@ -176,6 +177,9 @@ shift
 -v) DEBUG=-vv
 shift
 ;;
+--time) TIME=time
+shift
+;;
 --nolog) NOLOG=1
 shift
 ;;
@@ -236,7 +240,7 @@ case $i in
             not_today
             nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
             logdis ssh $DEBUG -p $PORT $JUMP -o -l $LUSER $1
-            ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER $1
+            $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER $1
             EXITUS=$?
             logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER $1 ---- $EXITUS
         fi
@@ -249,7 +253,7 @@ case $i in
             not_today
         nc $DEBUG -w 3 -z ${MAQUINA[$i]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
         logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
-        ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
         EXITUS=$?
         logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
@@ -288,7 +292,7 @@ fi
 not_today
 nc $DEBUG -w 3 -z ${MAQUINA[$ELECCION]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
 logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
-ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
+$TIME ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$?
 logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
