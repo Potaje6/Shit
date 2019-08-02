@@ -1,8 +1,19 @@
-#!/bin/bash
+#!/bin/ksh
 #Split origins from a file zone to other independent zone files
 #Los hombres de verdad hacen cambios en el dns sin chequear las zonas recien creadas, echale huevos mamon
 z=1
 ZONE_FILE=$1
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
+##Sustituir por los propios de la zona a tratar
+AUTHORITATIVE1=calatayud.aragon.es.
+AUTHORITATIVE2=root.calatayud.aragon.es.
+#AUTHORITATIVE3
+#AUTHORITATIVE4
+EXEC_FULL=${EXEC_DIR}/${EXEC_NAME}
+EXEC_TEMP_DIR=${EXEC_DIR}/${EXEC_NAME}.dir
+TEMPFILE=${EXEC_FULL}.tmp
+
 
 SERIAL=$(echo $(date  +%Y%m%d)40)
 
@@ -11,7 +22,7 @@ cat <<EOF
 ;/var/namedb/db.$ORIG_1
 ;\$TTL 14400
 \$TTL 300
-$ORIG_1      IN      SOA     calatayud.aragon.es. root.calatayud.aragon.es. (
+$ORIG_1      IN      SOA     $AUTHORITATIVE1 $AUTHORITATIVE2 (
                         $SERIAL
                         300
                         7200
@@ -25,26 +36,35 @@ EOF
 
 }
 
-NUM_ORIGS=$(grep ^\$ORIGIN $ZONE_FILE | cut -f 2 -d " " | tr "\n" " " | wc -w)
-ALL_ORIGS=$(grep ^\$ORIGIN $ZONE_FILE | cut -f 2 -d " " | tr "\n" " ")
+##Format it to a standard, we'll undo it later
+cat $ZONE_FILE | tr -s "\t" " " > $TEMPFILE
+##Add a space in the end to make sure we dont cut a record in the last origin
+echo >> $TEMPFILE
 
-ZONE_ROOT=$(grep "IN.*SOA" $ZONE_FILE | awk '{print$1}')
+NUM_ORIGS=$(grep ^\$ORIGIN $TEMPFILE | cut -f 2 -d " " | tr "\n" " " | wc -w)
+ALL_ORIGS=$(grep ^\$ORIGIN $TEMPFILE | cut -f 2 -d " " | tr "\n" " "| sed 's/$ORIGIN//g')
+FIRST_ORIG=$(grep ^\$ORIGIN $TEMPFILE | cut -f 2 -d " " | tr "\n" " "| sed 's/$ORIGIN//g' | cut -f 1 -d " ")
+
+ZONE_ROOT=$(grep "IN.*SOA" $TEMPFILE | awk '{print$1}')
 
 mkdir $ZONE_ROOT
-sed -n '/^;/,/\$ORIGIN/p' $ZONE_FILE | head -n -1 > $ZONE_ROOT/db.$ZONE_ROOT
+sed -n '/^;/,/^$ORIGIN/p;/^$ORIGIN/q' $TEMPFILE | head -n -1 > $ZONE_ROOT/db.$ZONE_ROOT
 
 until [ $z -gt $NUM_ORIGS ]; do
 
 ORIG_1=$(echo $ALL_ORIGS |cut -f $z -d " ")
 ORIG_2=$(echo $ALL_ORIGS |cut -f $(expr $z + 1) -d " ")
 
-sed -n "/ORIGIN $ORIG_1/,/ORIGIN $ORIG_2/p" $ZONE_FILE > $ZONE_ROOT/db.$ORIG_1
+sed -n "/ORIGIN $ORIG_1/,/ORIGIN $ORIG_2/p" $TEMPFILE > $ZONE_ROOT/db.$ORIG_1
 
-z=$(($z+1))
-if [ $z -ne $NUM_ORIGS ]; then
+#sed -n "/^\$ORIGIN $ORIG_1/,/^\$ORIGIN $ORIG_2/p;/^\$ORIGIN $ORIG_2/q" $TEMPFILE 
+
+if [ $z -le $NUM_ORIGS ]; then
 	head -n -1 $ZONE_ROOT/db.$ORIG_1 > asdf
 	gen_heading > $ZONE_ROOT/db.$ORIG_1
 	tail -n +2 asdf >> $ZONE_ROOT/db.$ORIG_1
 fi
+z=$(($z+1))
 done
+
 
