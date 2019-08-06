@@ -67,4 +67,4 @@ fi
 z=$(($z+1))
 done
 
-
+rm -f $TEMPFILE
