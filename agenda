@@ -1,5 +1,5 @@
 #!/bin/ksh
-##Daniel Molina
+###Daniel Molina
 ##Script para hacer recordatorios por notificacion flotante y con ventana
 
 export DISPLAY=:0

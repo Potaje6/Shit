@@ -78,7 +78,8 @@ logdis(){
 #What do we say to the god of death?
 not_today(){
 if [ $BRIGHTME -eq 1 ]; then
-    echo | nc -N -w1 ismyshit.online 8888              
+    echo | nc -N -w1 ismyshit.online 8888
+    echo "####"        
 fi
 }
 
@@ -300,3 +301,9 @@ logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]} ---- $
 
 esac
 exit
+
+test_asd (){
+if [ $z -gt $y ];then
+    
+
+}
