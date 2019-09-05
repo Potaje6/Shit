@@ -2,8 +2,12 @@
 #Potaje6 
 #Absurdly minimalistic, self hosted via xinetd replacement for ix.io or sprunge.us
 
+FILEPATH=/apps/notes/stuff/
 FILENAME="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')"
 
+until [ ! -f ${FILEPATH}${FILENAME} ]; do
+	FILENAME="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')"
+done
 
 trap force_exit SIGINT
 
@@ -13,6 +17,6 @@ force_exit(){
         exit 0
 }
 
-cat  > /apps/notes/stuff/${FILENAME}
+cat  > ${FILEPATH}${FILENAME}
 
 echo https://notes.ismyshit.online/${FILENAME}
