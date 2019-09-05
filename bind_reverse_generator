@@ -92,7 +92,10 @@ octet1(){
 FIELDS=1
 }
 generator1(){
-awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'}
+awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'"."}
+}
+generator1(){
+awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM"."'}
 }
 reverse1(){
 awk -F "." {'print $1'}
@@ -102,7 +105,7 @@ octet2(){
 FIELDS=1,2
 }
 generator2(){
-awk -v DOM="$DOMAIN"  {'print $(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'}
+awk -v DOM="$DOMAIN"  {'print $(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM"."'}
 }
 reverse2(){
 awk -F "." {'print $2"."$1'}
@@ -112,12 +115,11 @@ octet3(){
 FIELDS=1,2,3
 }
 generator3(){
-awk -v DOM="$DOMAIN"  {'print $NF"\tIN\tPTR\t"$1"."DOM'}
+awk -v DOM="$DOMAIN"  {'print $NF"\tIN\tPTR\t"$1"."DOM"."'}
 }
 reverse3(){
 awk -F "." {'print $3"."$2"."$1'}
 }
-
 
 octet$OCTET
 
@@ -125,20 +127,20 @@ octet$OCTET
 ZONE_FILE=$1
 
 ##And this my friends, is what i call a autentica puta mierda, but it works
-cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | while read range ; do gen_heading $range | tee $(echo $range|cut -f $FIELDS -d .).in-addr.arpa.zone.db;  grep $range $ZONE_FILE | sed 's/\./ /g' > $TEMPFILE; cat $TEMPFILE | generator${OCTET} | grep -v ^\; | tee -a $(echo $range|cut -f $FIELDS -d .).in-addr.arpa.zone.db;  done
+cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | while read range ; do REVERSED_RANGE=$(echo $range|cut -f $FIELDS -d .| reverse$OCTET); gen_heading $range | tee ${REVERSED_RANGE}.in-addr.arpa.zone.db;  grep $range $ZONE_FILE | sed 's/\./ /g' > $TEMPFILE; cat $TEMPFILE | generator${OCTET} | grep -v ^\; | tee -a ${REVERSED_RANGE}.in-addr.arpa.zone.db;  done
 
 ##Lazyness protocol ENGAGED
 ##ToDo fix the reverses, so it fucking works, for now, generate this part yourself
-#echo
-#echo "##this is a sample of what would look like the config for the zones generated in your master, tweak it to your environment"
-#echo
-#cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | reverse$OCTET | while read range; do
-#
-#cat <<EOF
-#zone "$range.in-addr.arpa" in {
-#type master;
-#file "$range.in-addr.arpa.zone.db";
-#};
-#EOF
-#done
+echo
+echo "##this is a sample of what would look like the config for the zones generated in your master, tweak it to your environment"
+echo
+cat $ZONE_FILE | grep -v ^\; | tr  "\t" " " | cut -f 4 -d " " | grep ^[0-9] | grep \\. |cut -f $FIELDS -d . | sort -u | reverse$OCTET | while read range; do
+
+cat <<EOF
+zone "$range.in-addr.arpa" in {
+type master;
+file "$range.in-addr.arpa.zone.db";
+};
+EOF
+done
 rm $TEMPFILE
