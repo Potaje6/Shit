@@ -92,7 +92,7 @@ octet1(){
 FIELDS=1
 }
 generator1(){
-awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM'"."}
+awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM"."'}
 }
 generator1(){
 awk -v DOM="$DOMAIN"  {'print $(NF-2)"."$(NF-1)"."$NF"\tIN\tPTR\t"$1"."DOM"."'}
