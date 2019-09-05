@@ -1,4 +1,5 @@
 #!/bin/bash
+###Potaje6
 ##Script to get the hour when i turn on the work pc and when i poweroff it, usually when i go in and when i get out
 ##to have some measures of how early/late i get in/out
 ##best used as service with systemd
