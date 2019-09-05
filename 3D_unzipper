@@ -2,7 +2,7 @@
 ##Potaje6
 #Simple script to organise 3D files and stuff
 #Redone from zero cuz how i did before was totally retarded, i still dunno why tf i did it like that
-#Made because im too lazy to decompress and keep it organized to a minimum for over 2 days
+#Made because im too lazy to decompress and keep it organized over 2 days
 
 STUFF=/home/dmolinao/3D
 PROJECTS=${STUFF}/PROJECTS
