@@ -68,6 +68,7 @@ do
 
         exit
 ;;
+
         "-d"|"--days") DAYS=$2
         if ! [[ "$DAYS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
@@ -75,7 +76,7 @@ do
         fi
         shift
         shift
-;;
+t;;
         "-h"|"--hours") HOURS=$2
         if ! [[ "$HOURS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
@@ -124,7 +125,8 @@ done
 until [ $z -eq $i ] ; do
 	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
 #		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
-		beep
+		#beep
+        aplay /home/dmolinao/alla/infidel/nr10.mp3.wav > /dev/null 2>&1
                 notify-send -i $ICO POTAGENDA "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" > /dev/null 2>&1
                  #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
                 zenity --question --text="${TAREA[$z]} planificado para  ${PLANIFICADO_RAW[$z]}\n\n5 minuticos mas?" --default-cancel  --title "POTAGENDA" > /dev/null 2>&1
