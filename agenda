@@ -76,7 +76,7 @@ do
         fi
         shift
         shift
-t;;
+;;
         "-h"|"--hours") HOURS=$2
         if ! [[ "$HOURS" =~ $NUMERIC ]]; then
             echo "NO TIME GIVEN!!"
