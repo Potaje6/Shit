@@ -5,7 +5,7 @@ FILEPATH=/apps/notes/stuff/
 FILENAME="$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 20 ; echo '')"
 DAYS=30
 
-if [ $1 == "--clean" ]; then
+if [ "$1" == "--clean" ]; then
 find $FILEPATH -type f ! -name "index.html" -mtime +$DAYS -delete
 exit
 fi

@@ -33,6 +33,7 @@ force_exit(){
         rm -f $TMP_FILE_PARSED
         exit 
 }
+
 search(){
 ##SEARCH##
 #spotify mode use always first choice and shows lyrics with cat instead of less
@@ -96,6 +97,8 @@ LINE_END=$(grep -n "MxM banner" $TMP_FILE | cut -f 1 -d ":")
 LINE_START=$(($LINE_START+1))
 LINE_END=$(($LINE_END-5))
 sed -n ${LINE_START},${LINE_END}p /var/tmp/$$ | sed 's/<br>//g' | sed 's/<i>//g' | sed 's/<\/i>//g' | sed 's/&quot;/"/g' >> $TMP_FILE_PARSED
+#Because it comes with cancer from microsoft
+dos2unix $TMP_FILE_PARSED
 #Do it faggot
 clear
 $LESS $TMP_FILE_PARSED

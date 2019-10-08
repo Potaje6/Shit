@@ -38,24 +38,24 @@ fi
 
 
 if [ $PRICE_MODE -eq 5 ]; then
-wget -q -O $TEMPFILE_WGET "http://store.steampowered.com/search/?filter=ut2&category1=998&os="
-grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
+wget -q -O $TEMPFILE_WGET "https://store.steampowered.com/search/?filter=ut2&category1=998&os="
+grep -A20 https://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
 cat <<EOF >> $MAILFILE
 
 Daily mail of Steam list of shit cheaper than 5 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
-http://store.steampowered.com/search/?filter=ut2&category1=998&os=
+https://store.steampowered.com/search/?filter=ut2&category1=998&os=
 
 
 EOF
 fi
 
 if [ $PRICE_MODE -eq 10 ]; then
-wget -q -O $TEMPFILE_WGET "http://store.steampowered.com/search/?filter=ut1&category1=998&os="
-grep -A20 http://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
+wget -q -O $TEMPFILE_WGET "https://store.steampowered.com/search/?filter=ut1&category1=998&os="
+grep -A20 https://store.steampowered.com/app/* $TEMPFILE_WGET > $TEMPFILE_GAMES
 cat <<EOF >> $MAILFILE
 
 Daily mail of Steam list of shit cheaper than 5 bucks generated at $(date +%Y/%m/%d--%H:%M:%S)
-http://store.steampowered.com/search/?filter=ut1&category1=998&os=
+https://store.steampowered.com/search/?filter=ut1&category1=998&os=
 
 EOF
 fi

@@ -66,7 +66,7 @@ fi
 ######vTHIS SHITv######
 get_price(){
 APP_PAGE=/var/tmp/$app_number.$$
-wget -q --load-cookies $EXEC_DIR/cookie  http://store.steampowered.com/app/$app_number -O $APP_PAGE
+wget -q --load-cookies $EXEC_DIR/cookie  https://store.steampowered.com/app/$app_number -O $APP_PAGE
 PRICE_NOW=$(grep -w '<meta itemprop="price" content=' $APP_PAGE | tr -d [:alpha:] | tr -d [:blank:] | tr -d [:punct:] | tr -d [:blank:] | tr -d [:cntrl:])
 if [ -z $PRICE_NOW ]; then
 PRICE_NOW=$(grep  '<div class="discount_final_price">' $APP_PAGE | tr -d [:alpha:] | tr -d [:blank:] | tr -d [:punct:] | tr -d [:blank:])
@@ -132,7 +132,7 @@ if [ "$RESULT" -eq 1 ]; then
         cat <<SACABO | mailx -s "$GAME_NAME is on SALE ${PRICE_NOW}€" $MAILTO
 
         ALERT!!! $GAME_NAME is on SALE  => ${PRICE_NOW}€ at $(date +%Y/%m/%d--%H:%M:%S)
-        Check it at: http://store.steampowered.com/app/$app_number
+        Check it at: https://store.steampowered.com/app/$app_number
 
 
 
