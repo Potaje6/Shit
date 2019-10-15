@@ -5,7 +5,7 @@
 ##Require ksh
 
 ##V Default user V##
-LUSER=nologin
+LUSER=nologin2
 #^ Default user ^##
 
 i=0
