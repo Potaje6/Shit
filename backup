@@ -1,5 +1,5 @@
 #!/bin/ksh
-##Daniel Molina
+##Potaje6
 BACKUPDIR=/home/dmolinao/backups
 APP=TS3_Pirata
 RETENC=1000000
@@ -43,6 +43,8 @@ BACKUPFULLDIR=$BACKUPDIR/$APP
 BACKUPTARFILE=$BACKUPFULLDIR/$APP$(date +%Y%m%d%H%M).tar.gz
 
 purge_backups(){
+        echo "$(date $HORA)--------Comezando proceso de purgado, $i Backups purgados"
+
 	ls -1 $BACKUPFULLDIR| sed "s/$APP//" | sed "s/\.tar.gz//" | while read FECHA_BACKUP; do
 		EXPIRED=$(echo "$(date +%Y%m%d%H%M)-$FECHA_BACKUP" | bc)
 		if [ "$EXPIRED" -gt "$RETENC" ]; then
@@ -113,22 +115,26 @@ if [ ! -d "$BACKUPFULLDIR/temp" ]; then
 	mkdir -p $BACKUPFULLDIR/temp
 fi
 
-if [ ! -z $KEY ]; then
-	RSA_OPTION=-e
-	RSA_KEY="ssh -i $KEY "
-fi
 
 #-e '"ssh' -i '../.ssh/key_vps"'
 
 
 echo "$(date $HORA)--------Recibiendo datos del backup"
-/usr/bin/rsync -avzh $RSA_OPTION "${RSA_KEY}" $LUSER@$HOST:$SOURCE $BACKUPFULLDIR/temp
-if [ $? -ne 0 ]; then
+if [ ! -z $KEY ]; then
+        RSA_OPTION=-e
+        RSA_KEY="ssh -i $KEY "
+        /usr/bin/rsync -avzh $RSA_OPTION "${RSA_KEY}" $LUSER@$HOST:$SOURCE $BACKUPFULLDIR/temp
+        DEP=$?
+else
+        /usr/bin/rsync -avzh $LUSER@$HOST:$SOURCE $BACKUPFULLDIR/temp
+        DEP=$?
+fi
+if [ $DEP -ne 0 ]; then
 	echo "Error al recibir los datos, saliendo..."
 	exit
 fi
 
-echo "$(date $HORA)--------Empaquetando datos del backup en $BACKUPTARFILE y borRando carpeta temporal"
+echo "$(date $HORA)--------Empaquetando datos del backup en $BACKUPTARFILE y borrando carpeta temporal"
 
 tar cvzf $BACKUPTARFILE -C $BACKUPFULLDIR/temp . && rm -rf $BACKUPFULLDIR/temp
 
