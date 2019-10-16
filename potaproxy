@@ -1,7 +1,7 @@
 #!/bin/bash
 ##edits by Potaje6
 set -e -o pipefail
-trap force_exit SIGINT EXIT
+trap force_exit SIGINT EXIT SIGTERM
 
 
 force_exit(){
