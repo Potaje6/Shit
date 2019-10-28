@@ -301,9 +301,3 @@ logdis ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -o GSSAPIAuthentication=no
 
 esac
 exit
-
-test_asd (){
-if [ $z -gt $y ];then
-    
-
-}
