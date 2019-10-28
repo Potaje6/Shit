@@ -240,10 +240,10 @@ case $i in
             fi
             not_today
             nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
-            logdis ssh $DEBUG -p $PORT $JUMP -o -l $LUSER $1
-            $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER $1
+            logdis ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER $1
+            $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER $1
             EXITUS=$?
-            logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER $1 ---- $EXITUS
+            logdis ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER $1 ---- $EXITUS
         fi
         exit 
 ;;      
@@ -253,10 +253,10 @@ case $i in
             fi
             not_today
         nc $DEBUG -w 3 -z ${MAQUINA[$i]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
-        logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
-        $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$i]}
+        logdis ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$i]}
+        $TIME ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$i]}
         EXITUS=$?
-        logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
+        logdis ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$i]} ---- $EXITUS
 ;;      
 *)
 
@@ -292,10 +292,10 @@ if [ $SCP -eq 1 ]; then
 fi
 not_today
 nc $DEBUG -w 3 -z ${MAQUINA[$ELECCION]} $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
-logdis ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]}
-$TIME ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -l $LUSER ${MAQUINA[$ELECCION]}
+logdis ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$ELECCION]}
+$TIME ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$ELECCION]}
 EXITUS=$?
-logdis finished ssh $DEBUG -p $PORT $JUMP -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
+logdis ssh $DEBUG -p $PORT -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER ${MAQUINA[$ELECCION]} ---- $EXITUS
 
 ;;
 

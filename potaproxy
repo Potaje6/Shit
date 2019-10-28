@@ -81,6 +81,9 @@ main() {
         -q -f \
         -o 'ControlMaster no' \
         -o 'ControlPath /dev/null' \
+	-o 'ServerAliveInterval=120' \
+       	-o 'GSSAPIAuthentication=no' \
+       	-o 'VerifyHostKeyDNS=no' \
         -n -N -D "$port" "$host" 
     SSH_PID=$(pgrep -n ssh)
         # Most of the failures that would keep SSH from spinning up usually happen
