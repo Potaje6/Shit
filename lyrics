@@ -107,7 +107,8 @@ fi
 ##END OF SEARCH
 
 spotify_mode(){
-SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2 | awk -F " - " '{print $1}')
+if ! pgrep spotify > /dev/null ; then echo "spotify not running!"; exit ; fi 
+SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2 | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
 ARTIST=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | grep -A2 artist | tail -1 | cut -d '"' -f 2)
 
 OLD_SONG=$SONG
@@ -116,8 +117,8 @@ search -s $ARTIST $SONG
 
 ##Get in, we're invading france
 while true ; do
-	SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2)
-	ARTIST=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | grep -A2 artist | tail -1 | cut -d '"' -f 2)
+	SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2 | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
+	ARTIST=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | grep -A2 artist | tail -1 | cut -d '"' -f 2 )
 	if [ ! "$SONG" == "$OLD_SONG" ] || [ ! "$ARTIST" == "$OLD_ARTIST" ];then
 		clear
 		search -s $SONG $ARTIST
@@ -129,8 +130,11 @@ done
 }
 
 cmus_mode(){
-SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
-ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+if ! pgrep cmus > /dev/null ; then echo "cmus not running!"; exit ; fi 
+#SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+SONG=$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )
+#ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+ARTIST=$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')
 
 OLD_SONG=$SONG
 OLD_ARTIST=$ARTIST
@@ -138,8 +142,10 @@ search -s $ARTIST $SONG
 
 ##Get in, we're invading france - budget mode
 while true ; do
-	SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
-	ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+	#SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+	SONG=$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
+	#ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+	ARTIST=$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')
 	if [ ! "$SONG" == "$OLD_SONG" ] || [ ! "$ARTIST" == "$OLD_ARTIST" ];then
 		clear
 		search -s $SONG $ARTIST
