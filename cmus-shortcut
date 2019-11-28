@@ -1,16 +1,18 @@
 #!/bin/bash
 ##Simple script to change cmus music over command, for its use as hotkeys
+ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
+
 
 case $1 in
 	next )
 		cmus-remote --server /run/user/1000/cmus-socket -n
 		#notify-send -t 3 "$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | head -n 1)" "$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | tail -n 2)"
-		notify-send -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
+		notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
 	;;
 	back )
 		cmus-remote --server /run/user/1000/cmus-socket -r
 		#notify-send -t 3 "$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | head -n 1)" "$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | tail -n 2)"
-		notify-send -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
+		notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
 	;;
 	play )
 		cmus-remote --server /run/user/1000/cmus-socket -u
