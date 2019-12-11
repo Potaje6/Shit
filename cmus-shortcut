@@ -17,4 +17,10 @@ case $1 in
 	play )
 		cmus-remote --server /run/user/1000/cmus-socket -u
 	;;
+	forward) 
+		cmus-remote --server /run/user/1000/cmus-socket -k +5
+	;;
+	backwards) 
+		cmus-remote --server /run/user/1000/cmus-socket -k -5
+	;;
 esac
