@@ -3,8 +3,8 @@
 ##Script para hacer recordatorios por notificacion flotante y con ventana
 
 export DISPLAY=:0
-BASEDIR=$(dirname "$0")
-AGENDA=$BASEDIR/parametros/agenda
+EXEC_DIR=$(dirname "$0")
+AGENDA=$EXEC_DIR/parametros/agenda
 #FECHA=$(date +%Y-%m-%d/%H:%M)
 FECHA=$(date +%Y%m%d%H%M)
 i=0
@@ -16,7 +16,8 @@ HOURS=0
 MINS=0
 NEW_MODE=0
 NUMERIC='^[0-9]+$'
-ICO=/home/dmolinao/scripts/parametros/pepesuicide.jpg
+ICO=$EXEC_DIR/parametros/pepesuicide.jpg
+SOUND=/home/dmolinao/alla/infidel/nr10.mp3.wav
 
 
 print_uso(){
@@ -126,7 +127,7 @@ until [ $z -eq $i ] ; do
 	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
 #		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
 		#beep
-        aplay /home/dmolinao/alla/infidel/nr10.mp3.wav > /dev/null 2>&1
+        aplay $SOUND > /dev/null 2>&1
                 notify-send -i $ICO POTAGENDA "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" > /dev/null 2>&1
                  #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
                 zenity --question --text="${TAREA[$z]} planificado para  ${PLANIFICADO_RAW[$z]}\n\n5 minuticos mas?" --default-cancel  --title "POTAGENDA" > /dev/null 2>&1
