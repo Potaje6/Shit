@@ -25,17 +25,17 @@ nc -z -w 5 $MAQUINA $PORT 2>&1 /dev/null
 if [ $? -ne 0 ] ; then
 #        MAQUINA_GES="${MAQUINA}-ges"
         echo "$MAQUINA ${red}Error, port not open${normal} " 
-        echo "########" 
+        echo "${yellow}########${normal}" 
 else
 
         echo "V--- ${bold}$MAQUINA${normal} ---V"
         $SSH_COMMAND ${LUSER}@$MAQUINA "$@"
         if [ $? -ne 0 ]; then
                 echo "$MAQUINA ${red}Error${normal} "
-                echo "########"
+                echo "${yellow}########${normal}"
         else
                 echo "$MAQUINA ${green}Success${normal}"
-                echo "########"
+                echo "${yellow}########${normal}"
         fi
 fi
 
@@ -47,7 +47,7 @@ fi
 #        echo $MAQUINA Worked
 #        echo "--------"
 #        $SSH_COMMAND ${LUSER}@$MAQUINA_GES "$@"
-#        echo "########"
+#        echo "${yellow}########${normal}"
 #fi
 }
 
@@ -71,7 +71,7 @@ fi
 while [ $# -gt 0 ];
 do
 case $1 in
--h)     
+-h|--help)     
 print_uso
 ;;
 -l) LIST=$2
