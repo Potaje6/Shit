@@ -56,7 +56,7 @@ print_uso(){
 ./lazy_ansible [commands]
 Este script lanza el comando que le pongas a una lista de hosts 
 -l File with host list. Default $(echo "$LIST")
--r SSH as root
+-r SSH as root (shortcut to -u root)
 -u User to connect with ssh. Default $(echo "$LUSER")
 -p this 1 is tricky, password to connect to servers, for those cases where you don't have trusted RSAs, be careful where you use this option, it has to be on plain text as it is passed to sshpass, dont be retard, type a space before this execution to not include it in the history
 -v debug mode for ssh
@@ -113,7 +113,7 @@ fi
 
 COMMANDS="$@"
 
-if [ -z $COMMANDS ]; then
+if [ -z "$COMMANDS" ]; then
  echo "No commands passed, pass at least 1 command"
  print_uso
 fi
