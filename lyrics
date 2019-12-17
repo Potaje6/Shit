@@ -17,6 +17,7 @@ SPOTIMODE=0
 NOT_FOUND=0
 #for spotify purposes, i swear!
 CHOICE=0
+CMUS_COMMAND="cmus-remote --server /run/user/1000/cmus-socket"
 
 trap force_exit SIGINT SIGTERM
 
@@ -87,7 +88,7 @@ if [ $NOT_FOUND -eq 0 ]; then
 echo "###${NAME[$CHOICE]}" > $TMP_FILE_PARSED
 lynx -source ${LINK[$CHOICE]} > $TMP_FILE
 #Pleistoceno mode
-#get line range of song
+#get line range of songs
 unset LINE_START
 unset LINE_END
 unset LINE_START
@@ -131,10 +132,10 @@ done
 
 cmus_mode(){
 if ! pgrep cmus > /dev/null ; then echo "cmus not running!"; exit ; fi 
-#SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
-SONG=$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )
-#ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
-ARTIST=$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')
+#SONG=$($CMUS_COMMAND -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+SONG=$($CMUS_COMMAND -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )
+#ARTIST=$($CMUS_COMMAND -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+ARTIST=$($CMUS_COMMAND -Q | grep "tag artist" | sed 's/tag artist //')
 
 OLD_SONG=$SONG
 OLD_ARTIST=$ARTIST
@@ -142,10 +143,10 @@ search -s $ARTIST $SONG
 
 ##Get in, we're invading france - budget mode
 while true ; do
-	#SONG=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
-	SONG=$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
-	#ARTIST=$(cmus-remote -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
-	ARTIST=$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')
+	#SONG=$($CMUS_COMMAND -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
+	SONG=$($CMUS_COMMAND -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
+	#ARTIST=$($CMUS_COMMAND -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 2p)
+	ARTIST=$($CMUS_COMMAND -Q | grep "tag artist" | sed 's/tag artist //')
 	if [ ! "$SONG" == "$OLD_SONG" ] || [ ! "$ARTIST" == "$OLD_ARTIST" ];then
 		clear
 		search -s $SONG $ARTIST
