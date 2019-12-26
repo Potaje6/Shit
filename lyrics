@@ -78,8 +78,8 @@ fi
 if [ "$CHOICE" -eq 0 ]; then
 	read CHOICE
 fi
-
-if ! [[ "$CHOICE" =~ $re ]] ; then
+#Do not remove the double brackets
+if ! [[ "$CHOICE" =~ $re ]]; then
    echo "U dont know how to read bruh?"
    exit
 fi

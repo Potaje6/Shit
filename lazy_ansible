@@ -52,7 +52,7 @@ fi
 }
 
 print_uso(){
-        cat <<EOF
+cat <<EOF
 ./lazy_ansible [commands]
 Este script lanza el comando que le pongas a una lista de hosts 
 -l File with host list. Default $(echo "$LIST")
@@ -60,6 +60,9 @@ Este script lanza el comando que le pongas a una lista de hosts
 -u User to connect with ssh. Default $(echo "$LUSER")
 -p this 1 is tricky, password to connect to servers, for those cases where you don't have trusted RSAs, be careful where you use this option, it has to be on plain text as it is passed to sshpass, dont be retard, type a space before this execution to not include it in the history
 -v debug mode for ssh
+
+ACHTUNG: This script is intended for simple commands
+If you need to pipe commands, use regexps or something you might have to escape the special characters
 EOF
 exit
 }
