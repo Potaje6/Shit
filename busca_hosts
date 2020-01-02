@@ -89,7 +89,7 @@ fi
 print_uso(){
 cat <<EOF
         Usage:
-        ./script [-h|-v|-u|-r] string_to_grep
+        ./$EXEC_NAME [-h|-v|-u|-r] string_to_grep
         This shit logs all ur activity for the NSA in $LOG_FILE (if present)
         -v verbose mode
         -u user

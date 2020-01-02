@@ -51,13 +51,15 @@ echo "NEXT HYDRATION $(date -d "+$PERIOD days")"
 echo "STAY HYDRATED HOMIE"
 exit
 ;;
+-h|--help) print_uso
+;;
 *) shift
 ;;
 esac
 done
 
 TIME_PASSED=$(expr $EPOCH_TIME - $LAST_HYDRATION)
-if [ $TIME_PASSED -gt $(expr $EPOCH_TIME - $(date -d "-$PERIOD days" +%s)) ]; then
+if [ "$TIME_PASSED" -gt $(expr $EPOCH_TIME - $(date -d "-$PERIOD days" +%s)) ]; then
 	test -f $SOUND && aplay $SOUND > /dev/null 2>&1 &
 	zenity --warning --text="FUCKING $PLANT_NAME REQUIRES FUCKING HYDRATION" --title "HYDROBOT" > /dev/null 2>&1
 else
