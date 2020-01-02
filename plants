@@ -35,9 +35,11 @@ if [ $# -eq 0 ];then
 	print_uso
 else
 	test -d $EXEC_DIR/parametros || mkdir $EXEC_DIR/parametros
+	test -f $HISTORY_FILE
 	if [ $? -ne 0 ]; then
 		echo "Plant $PLANT_NAME doesn't exist, creating it"
 		echo $EPOCH_TIME > $HISTORY_FILE
+		exit
 	fi
 	LAST_HYDRATION=$(tail -n 1 $HISTORY_FILE)
 fi
