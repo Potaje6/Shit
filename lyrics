@@ -47,7 +47,7 @@ if [ "$1" == "-s" ]; then
 fi
 SEARCH=$(echo $@|tr -s [:blank:] \+)
 
-curl -s https://search.azlyrics.com/search.php?q=$SEARCH | grep "target=\"_blank" |tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | while read NUMBER LINK NAME; do 
+lynx -source https://search.azlyrics.com/search.php?q=$SEARCH | grep "target=\"_blank" |tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | while read NUMBER LINK NAME; do 
 i=$(($i+1))
 
 echo $i $NAME 
