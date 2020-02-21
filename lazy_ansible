@@ -54,7 +54,7 @@ fi
 print_uso(){
 cat <<EOF
 ./lazy_ansible [commands]
-Este script lanza el comando que le pongas a una lista de hosts 
+This script launches the command to the selected list of hosts
 -l File with host list. Default $(echo "$LIST")
 -r SSH as root (shortcut to -u root)
 -u User to connect with ssh. Default $(echo "$LUSER")
@@ -78,6 +78,7 @@ case $1 in
 print_uso
 ;;
 -l) LIST=$2
+    if ! test -f $LIST ; then echo List file $LIST not found; exit; fi
 shift
 shift
 ;;
