@@ -1,0 +1,19 @@
+#!/bin/ksh
+ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
+PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+
+while true ; do 
+	if  pgrep -x cmus > /dev/null ; then
+
+while true; do 
+	NOW_PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+	if [ ! "$PLAYING" == "$NOW_PLAYING" ]; then
+		notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
+		PLAYING="$NOW_PLAYING"
+	fi
+	sleep 10
+done
+fi
+sleep 60
+done
+
