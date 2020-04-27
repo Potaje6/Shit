@@ -235,9 +235,9 @@ done
 
 case $i in
 0) echo "Not found in list"
-        nc $DEBUG -w 3 -z $1 22 > /dev/null 2>&1
+        nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1
         if [ $? -eq 0 ]; then
-            echo "${bold}$1${normal} exist and got 22 open"
+            echo "${bold}$1${normal} exist and got $PORT open"
             if [ $SCP -eq 1 ]; then
             send_or_get $SCP_FILE $2 $LUSER
             fi
