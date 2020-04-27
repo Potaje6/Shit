@@ -21,7 +21,7 @@ PLAY=0
 PTH=/home/dmolinao/alla
 FICH=activo.wav
 REPRODUCIENDO=$PTH/$FICH
-ROTATE=$PTH/HoTS/Murky_default
+ROTATE=$PTH/infidel
 WAVS=$(ls -1 $ROTATE/*wav | wc -l  | cut -d" " -f1)
 TURNO=$(echo $(($RANDOM%$WAVS)))
 
