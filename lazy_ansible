@@ -11,8 +11,12 @@ normal=$(tput sgr0)
 red=$(tput setaf 1)
 yellow=$(tput setaf 3)
 green=$(tput setaf 2)
+blue=$(tput setaf 6)
+i=1
 
 lets_roll(){
+TOTAL=$(grep -v ^# -c $LIST)
+
 grep -v ^# $LIST | while read grasa ; do main $grasa $COMMANDS ; done
 exit
 }
@@ -24,10 +28,15 @@ shift
 nc -z -w 5 $MAQUINA $PORT 2>&1 /dev/null
 if [ $? -ne 0 ] ; then
 #        MAQUINA_GES="${MAQUINA}-ges"
+        echo "${blue}#### $i of $TOTAL ####${normal}" 
+        i=$(($i+1))
         echo "$MAQUINA ${red}Error, port not open${normal} " 
         echo "${yellow}########${normal}" 
-else
 
+
+else
+        echo "${blue}#### $i of $TOTAL ####${normal}" 
+        i=$(($i+1))
         echo "V--- ${bold}$MAQUINA${normal} ---V"
         $SSH_COMMAND ${LUSER}@$MAQUINA "$@"
         if [ $? -ne 0 ]; then
