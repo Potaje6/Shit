@@ -5,7 +5,8 @@
 ##best used as service with systemd
 
 WEEKNUM=$(date +%U)
-HISTORY=/home/dmolinao/scripts/parametros/horas/$WEEKNUM
+YEAR=$(date +%Y)
+HISTORY=/home/dmolinao/scripts/parametros/horas/$WEEKNUM_$YEAR
 
 print_uso(){
 cat <<EOF
