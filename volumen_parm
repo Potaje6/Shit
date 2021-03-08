@@ -24,10 +24,22 @@
                 #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 
 ;;
+        "toggle_mic")
+                amixer set Capture toggle 
+                notify-send -t 20  "Microphone $(amixer sget Capture | tail -1 | cut -f 9 -d " ")"
+                STATE=$(amixer sget Capture | tail -1 | cut -f 9 -d " " | tr -d \[ | tr -d \])
+                if [ $STATE == "off" ]; then
+                        gsettings set org.gnome.desktop.interface show-battery-percentage false
+                elif [ $STATE == "on" ]; then
+                        gsettings set org.gnome.desktop.interface show-battery-percentage true
+                fi
+
+                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                
+;;
+
                 *)
                 shift
         esac
-
-
 
 
