@@ -17,7 +17,7 @@ MINS=0
 NEW_MODE=0
 NUMERIC='^[0-9]+$'
 ICO=$EXEC_DIR/parametros/pepesuicide.jpg
-SOUND=/home/dmolinao/alla/infidel/nr10.mp3.wav
+SOUND=/home/dmolinao/alla/activo.wav
 
 
 print_uso(){
