@@ -5,12 +5,13 @@
 ##Require ksh
 
 ##V Default user V##
-LUSER=nologin2
+LUSER=dmolina
 #^ Default user ^##
 
 i=0
 x=1
 z=0
+HOSTNAME=$(hostname)
 bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setaf 1)
@@ -81,8 +82,12 @@ logdis(){
 #What do we say to the god of death?
 not_today(){
 if [ $BRIGHTME -eq 1 ]; then
+   if [ "$HOSTNAME" == "potacenter" ]; then
+      ~dmolinao/scripts/random_strings
+   else
     echo | nc -N -w1 ismyshit.online 8888
     echo "####"
+   fi
 fi
 }
 
