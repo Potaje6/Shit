@@ -78,7 +78,7 @@ main() {
     done
 
     ssh \
-        -q -f \
+        -q -p 22 -f \
         -o 'ControlMaster no' \
         -o 'ControlPath /dev/null' \
 	-o 'ServerAliveInterval=120' \
