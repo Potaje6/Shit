@@ -99,6 +99,7 @@ cat <<EOF
         -v verbose mode
         -u user
         -r root
+        -n nologin
         -a admin
         -j user@host use that connection to jump to final host (still in testing)
         -p port
@@ -168,6 +169,9 @@ shift
 shift
 ;;
 -r) LUSER=root
+shift
+;;
+-n) LUSER=nologin
 shift
 ;;
 -a) LUSER=admin
