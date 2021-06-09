@@ -128,10 +128,14 @@ octet$OCTET
 
 ZONE_FILE=$1
 
+test -f $ZONE_FILE || (echo "$ZONE_FILE doesn't exist, exiting..."; exit)
+
+
 ##And this my friends, is what i call a autentica puta mierda, but it works
+#If zones dont have the format "$HOST IN A $IP" "grep -f 4" should be changed to 3 
 cat $ZONE_FILE \
 | grep -v ^\; \
-| tr  "\t" " " \
+| tr -s "\t" " " \
 | cut -f 4 -d " " \
 | grep ^[0-9] \
 | grep \\. \
@@ -147,12 +151,13 @@ gen_heading $range \
 | tee -a ${REVERSED_RANGE}.in-addr.arpa.zone.db;  done
 
 ##Lazyness protocol ENGAGED
+#If zones dont have the format "$HOST IN A $IP" "grep -f 4" should be changed to 3 
 echo
 echo "##this is a sample of what would look like the config for the zones generated in your master, tweak it to your environment"
 echo
 cat $ZONE_FILE \
 | grep -v ^\; \
-| tr  "\t" " " \
+| tr -s "\t" " " \
 | cut -f 4 -d " " \
 | grep ^[0-9] \
 | grep \\. \
@@ -168,4 +173,5 @@ file "$range.in-addr.arpa.zone.db";
 };
 EOF
 done
-rm $TEMPFILE
+
+test -f $TEMPFILE && rm $TEMPFILE
