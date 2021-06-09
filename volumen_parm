@@ -35,7 +35,6 @@
                 fi
 
                 #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
-                
 ;;
 
                 *)
