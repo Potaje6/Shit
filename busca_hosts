@@ -1,6 +1,6 @@
 #!/bin/ksh
 ##Potaje6
-##Grep stuff in .ssh/known_hosts, typing the whole hostname is for niggers and fags
+##Grep stuff in .ssh/known_hosts, typing the whole hostname is for operators
 ##Disable ssh's know_hosts encryption to use this -> HashKnownHosts no 
 ##Require ksh
 
@@ -228,7 +228,7 @@ print_uso
 fi
 
 #solo 1 de los 2 modos puede estar activo, o fichero list o known_hosts
-cat $HOME/.ssh/known_hosts | cut -d "," -f1 | cut -d " " -f1 | uniq -u |sort | grep -i -- $1 |\
+cat $HOME/.ssh/known_hosts | cut -d "," -f1,2 | cut -d " " -f1 | tr "," "\n" | uniq -u |sort | grep -i -- $1 |\
 
 #if [ ! -f $LIST_FILE ]; then
 #    touch $LIST_FILE
@@ -252,7 +252,7 @@ case $i in
         if [ $? -eq 0 ]; then
             echo "${bold}$1${normal} exist and got $PORT open"
             if [ $SCP -eq 1 ]; then
-            send_or_get $SCP_FILE $2 $LUSER
+            send_or_get $SCP_FILE $1 $LUSER
             fi
             not_today
             nc $DEBUG -w 3 -z $1 $PORT > /dev/null 2>&1 || echo "Seems that port $PORT of ${MAQUINA[$i]} is unreachable or not open, if you are using -j option this can be ignored"
