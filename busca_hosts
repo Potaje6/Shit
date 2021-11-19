@@ -223,12 +223,16 @@ shift
 esac
 done
 
+gen_ssh_command(){
+    SSH_COMMAND="ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER"
+}
+
 if [ $# -eq 0 ];then
 print_uso
 fi
 
 #solo 1 de los 2 modos puede estar activo, o fichero list o known_hosts
-cat $HOME/.ssh/known_hosts | cut -d "," -f1,2 | cut -d " " -f1 | tr "," "\n" | uniq -u |sort | grep -i -- $1 |\
+cat $HOME/.ssh/known_hosts | cut -d "," -f1,2 | cut -d " " -f1 | tr "," "\n" | cut -f1 -d : | tr -d '[' | tr -d ']' |sort -u | grep -i -- $1 |\
 
 #if [ ! -f $LIST_FILE ]; then
 #    touch $LIST_FILE
