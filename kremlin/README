@@ -1,0 +1,4 @@
+Stuff to log commands to a log file after execution without passing by the history
+
+paste kremlin.sh to /etc/profile.d
+paste rsyslog or syslog for whatever you have as .conf in /etc/rsyslog.d  or /etc/syslog-ng/conf.d/

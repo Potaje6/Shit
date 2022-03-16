@@ -1,1 +1,3 @@
+#Potaje6
+#log commands on execution for rsyslog
 local6.*                /var/log/cmdlog.log
