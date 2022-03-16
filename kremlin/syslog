@@ -1,0 +1,13 @@
+#Dani log commands
+destination d_cmd {
+        file("/var/log/cmd.log" template(t_format_os));
+};
+#Dani log commands
+filter f_cmd {
+        facility(local6);
+        level(debug);
+#Dani log commands
+log {
+        source(s_sys); filter(f_cmd); destination(d_cmd);
+};
+
