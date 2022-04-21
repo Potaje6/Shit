@@ -60,6 +60,10 @@ else
 fi
 }
 
+blank(){
+color=$normal
+}
+
 ##Captura de salida
 trap force_exit SIGINT
 
@@ -107,6 +111,7 @@ cat <<EOF
         --send/--get -f [file] [string_to_grep] (works with the rest of parms)
             -R recursive
         --faggot = do it faggot
+        --blank = do no show colors in list
         --brightme some quotes before logging for ur enjoyment, stay hydrated niggas
         --time show time after closing connections
 EOF
@@ -181,6 +186,9 @@ shift
 shift
 ;;
 --ieci) MODE=ieci
+shift
+;;
+--blank) MODE=blank
 shift
 ;;
 -j|-J) JUMP="-J $2"
