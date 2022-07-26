@@ -2,6 +2,9 @@
 ##edits by Potaje6
 set -e -o pipefail
 trap force_exit SIGINT EXIT SIGTERM
+SSH_PORT=22
+EXEC_DIR=$(dirname $0)
+EXEC_NAME=$(basename $0)
 
 
 force_exit(){
@@ -10,6 +13,12 @@ force_exit(){
         exit 3
 }
 
+print_uso(){
+    cat <<EOF
+./${EXEC_NAME} user@host
+-p specify port to make the ssh connection
+EOF
+}
 
 
 spinner()
@@ -78,7 +87,7 @@ main() {
     done
 
     ssh \
-        -q -p 22 -f \
+        -q -p $SSH_PORT -f \
         -o 'ControlMaster no' \
         -o 'ControlPath /dev/null' \
 	-o 'ServerAliveInterval=120' \
@@ -118,5 +127,20 @@ main() {
     fi
 }
 
+
+while [ $# -gt 0 ];
+do
+    case $1 in
+        -h|--help)     
+        print_uso
+        ;;
+        -p) SSH_PORT=$2
+        shift
+        shift
+        ;;
+        *) break
+        ;;
+    esac
+done
 main "$@"
 
