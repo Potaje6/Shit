@@ -313,6 +313,11 @@ if [ "$ELECCION" -gt $i ]; then
     exit 
 fi
 
+if [ "$ELECCION" -eq 0 ]; then
+    echo "U dont know how to read bruh?"
+    exit
+fi
+
 
 #if [ ! -d $LOG_DIR ]; then
 #    echo "log dir not found, creating $LOG_DIR"
