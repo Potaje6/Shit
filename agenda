@@ -57,7 +57,8 @@ do
         "-l"|"--list") grep -v ^# $AGENDA 
         exit
 ;;
-        "-t"|"--today") echo "$(tput setaf 1) $(grep "$(date +%Y-%m-%d)" $AGENDA) $(tput sgr0)"
+        "-t"|"--today") grep -v "^#" $AGENDA |grep -q "$(date +%Y-%m-%d)" &&
+        echo "$(tput setaf 1) $(grep -v ^# $AGENDA |grep "$(date +%Y-%m-%d)") $(tput sgr0)"
         exit
 ;;
         "--help") print_uso
