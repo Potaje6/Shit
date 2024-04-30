@@ -17,8 +17,9 @@ MINS=0
 NEW_MODE=0
 NUMERIC='^[0-9]+$'
 ICO=$EXEC_DIR/parametros/pepesuicide.jpg
-SOUND=/home/dmolinao/alla/activo.wav
-
+#SOUND=/home/dmolinao/alla/activo.wav
+#SOUND=/home/dmolinao/alla/HL/scientist/scream07.wav
+SOUND=/home/dmolinao/alla/wuewuewue.wav
 
 print_uso(){
 cat <<EOF
@@ -31,6 +32,7 @@ Uso: ./agenda [--now] [-l/--list] [-e/--edit] [--help] [-a/--add] [-f/--future]
 
 --now muestra la fecha de ahora con el formato para la lista
 -l/--list lista todas las tareas del fichero que no se hayan realizado/comentado
+-t/--today lista las tareas planificadas para el día de hoy
 -e/--edit edita el fichero de la agenda
 -a/--add
 -f/--future ver las tareas planificadas en el futuro (sobre todo para debuggear, para ver tareas pendientes utiliza -l)
@@ -53,6 +55,9 @@ do
         exit
 ;;
         "-l"|"--list") grep -v ^# $AGENDA 
+        exit
+;;
+        "-t"|"--today") echo "$(tput setaf 1) $(grep "$(date +%Y-%m-%d)" $AGENDA) $(tput sgr0)"
         exit
 ;;
         "--help") print_uso
