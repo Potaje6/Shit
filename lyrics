@@ -19,6 +19,7 @@ NOT_FOUND=0
 #for spotify purposes, i swear!
 CHOICE=0
 CMUS_COMMAND="cmus-remote --server /run/user/1000/cmus-socket"
+FUCKING_TOKEN=2b5fffb44ab1983602bae5bcab845750eeefd45240212ce9d7d4d071b7860492
 
 trap force_exit SIGINT SIGTERM
 
@@ -49,7 +50,7 @@ fi
 SEARCH=$(echo $@|tr -s [:blank:] \+)
 
 #lynx -source https://search.azlyrics.com/search.php?q=$SEARCH | grep "target=\"_blank" |tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | while read NUMBER LINK NAME; do 
-lynx -source https://search.azlyrics.com/search.php?q=${SEARCH}\&x=ef0b3211531d815a983090484ef283ae390efcb7d054bd5d682b06acde5802ec | tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | grep -v "<td" | sed 's/">"/ /' | sed 's/"/ /' | sed 's/<a href=//g' | sed 's/^ //g' | sed "s/\">[0-9]. <span>/ /g" | sed 's/<\/span>//g' | tr -s [:blank:] | tr -d \"| while read LINK NAME; do 
+lynx -source https://search.azlyrics.com/search.php?q=${SEARCH}\&x=$FUCKING_TOKEN| tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | grep -v "<td" | sed 's/">"/ /' | sed 's/"/ /' | sed 's/<a href=//g' | sed 's/^ //g' | sed "s/\">[0-9]. <span>/ /g" | sed 's/<\/span>//g' | tr -s [:blank:] | tr -d \"| while read LINK NAME; do 
 i=$(($i+1))
 
 echo $i $NAME 
