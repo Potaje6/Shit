@@ -2,6 +2,7 @@
 ###Daniel Molina
 ##Script para hacer recordatorios por notificacion flotante y con ventana
 
+
 export DISPLAY=:0
 EXEC_DIR=$(dirname "$0")
 AGENDA=$EXEC_DIR/parametros/agenda
