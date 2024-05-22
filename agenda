@@ -19,7 +19,7 @@ NUMERIC='^[0-9]+$'
 ICO=$EXEC_DIR/parametros/pepesuicide.jpg
 #SOUND=/home/dmolinao/alla/activo.wav
 #SOUND=/home/dmolinao/alla/HL/scientist/scream07.wav
-SOUND=/home/dmolinao/alla/wuewuewue.wav
+SOUND=$EXEC_DIR/parametros/wuewuewue.wav
 
 print_uso(){
 cat <<EOF
