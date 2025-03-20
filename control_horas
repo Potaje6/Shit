@@ -6,7 +6,7 @@
 
 WEEKNUM=$(date +%U)
 YEAR=$(date +%Y)
-HISTORY=/home/dmolinao/scripts/parametros/horas/$WEEKNUM_$YEAR
+HISTORY=/home/dmolina/scripts/parametros/horas/$WEEKNUM_$YEAR
 
 print_uso(){
 cat <<EOF
