@@ -19,7 +19,7 @@ NOT_FOUND=0
 #for spotify purposes, i swear!
 CHOICE=0
 CMUS_COMMAND="cmus-remote --server /run/user/1000/cmus-socket"
-FUCKING_TOKEN=2b5fffb44ab1983602bae5bcab845750eeefd45240212ce9d7d4d071b7860492
+FUCKING_TOKEN=4cbbde6e137c010b19fd025c3fd15151268e631c1a7ee4ec2a2e937791c7311a
 
 trap force_exit SIGINT SIGTERM
 
