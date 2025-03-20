@@ -1,5 +1,6 @@
 #!/bin/bash
-##edits by Potaje6
+##Start a chromium proxied with SOCKS5 through a SSH tunnel
+#From a kind reddit user that i lost the comment, edits by Potaje6
 set -e -o pipefail
 trap force_exit SIGINT EXIT SIGTERM
 SSH_PORT=22
@@ -8,7 +9,8 @@ EXEC_NAME=$(basename $0)
 
 
 force_exit(){
-        rm -rf -- "$datadir" 
+        if [ -d $datadir ]; then rm -rf -- "$datadir"; fi
+         
         printf '\e]2;%s\a' "$(hostname) - $(whoami)"
         exit 3
 }
