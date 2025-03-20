@@ -54,6 +54,7 @@ echo "STAY HYDRATED HOMIE"
 exit
 ;;
 -h|--help) print_uso
+exit
 ;;
 *) shift
 ;;
