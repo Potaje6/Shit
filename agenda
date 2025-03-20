@@ -55,7 +55,7 @@ do
         "--now") date +%Y-%m-%d/%H:%M
         exit
 ;;
-        "-l"|"--list") grep -v ^# $AGENDA 
+        "-l"|"--list") grep -v "^#" $AGENDA 
         exit
 ;;
         "-t"|"--today") grep -v "^#" $AGENDA |grep -q "$(date +%Y-%m-%d)" &&
