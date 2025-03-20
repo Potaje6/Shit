@@ -119,9 +119,9 @@ if [ "$DEBUG" -eq 1 ]; then
 fi
 
 if [ -z "$PASS" ]; then
-        SSH_COMMAND="ssh $DEBUG -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+        SSH_COMMAND="ssh $DEBUG -n -o StrictHostKeyChecking=accept-new -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
 else
-        SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+        SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o StrictHostKeyChecking=accept-new -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
 fi
 
 COMMANDS="$@"

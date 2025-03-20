@@ -33,7 +33,7 @@ GET=0
 BRIGHTME=0
 
 gen_ssh_command(){
-    SSH_COMMAND="ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER"
+    SSH_COMMAND="ssh $DEBUG -p $PORT $JUMP -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER"
 }
 
 normie(){
@@ -208,14 +208,14 @@ shift
 --nolog) NOLOG=1
 shift
 ;;
---send) SEND=1
+--send|--s) SEND=1
          SCP=1
 shift
 ;;
 --brightme) BRIGHTME=1
 shift
 ;;
---get) GET=1
+--get|--g) GET=1
        SCP=1
 shift
 ;;
@@ -232,7 +232,7 @@ esac
 done
 
 gen_ssh_command(){
-    SSH_COMMAND="ssh $DEBUG -p $PORT $JUMP -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER"
+    SSH_COMMAND="ssh $DEBUG -p $PORT $JUMP -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=120 -o GSSAPIAuthentication=no -o VerifyHostKeyDNS=no -l $LUSER"
 }
 
 if [ $# -eq 0 ];then
