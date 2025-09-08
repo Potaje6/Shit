@@ -1,19 +1,38 @@
 #!/bin/ksh
+
 ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
 PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+STREAM="$(cmus-remote -Q | grep "^stream" | sed 's/stream //' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+
+radiostream(){
+NOW_STREAM="$(cmus-remote -Q | grep "^stream" | sed 's/stream //' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+if [ ! "$STREAM" == "$NOW_STREAM" ]; then
+	notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "^stream" | sed 's/stream //' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+	STREAM="$NOW_STREAM"
+fi
+sleep 10
+}
+
+song(){
+NOW_PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
+if [ ! "$PLAYING" == "$NOW_PLAYING" ]; then
+	notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
+	PLAYING="$NOW_PLAYING"
+fi
+sleep 10
+}
 
 while true ; do 
 	if  pgrep -x cmus > /dev/null ; then
 
-while true; do 
-	NOW_PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
-	if [ ! "$PLAYING" == "$NOW_PLAYING" ]; then
-		notify-send -i $ICO -t 3 "$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g' )" "$(cmus-remote -Q | grep "tag artist" | sed 's/tag artist //')"
-		PLAYING="$NOW_PLAYING"
-	fi
-	sleep 10
-done
+if [ "$PLAYING" == "RADIO BOB" ]; then
+	radiostream
+else
+	song
 fi
+
+
+	fi
 sleep 60
 done
 
