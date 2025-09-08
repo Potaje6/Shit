@@ -59,7 +59,7 @@ do
         exit
 ;;
         "-t"|"--today") grep -v "^#" $AGENDA |grep -q "$(date +%Y-%m-%d)" &&
-        echo "$(tput setaf 1) $(grep -v ^# $AGENDA |grep "$(date +%Y-%m-%d)") $(tput sgr0)"
+        echo "$(tput setaf 1)$(grep -v ^# $AGENDA |grep "$(date +%Y-%m-%d)") $(tput sgr0)"
         exit
 ;;
         "--help") print_uso
@@ -71,8 +71,12 @@ do
                     echo "No argument given"
                     exit
                     fi 
-                    expr $DAYS + $HOURS + $MINS | grep -q 0
-                    echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" | tee -a $AGENDA
+                    if [ -z ${AT} ]; then
+                      expr $DAYS + $HOURS + $MINS | grep -q 0
+                      echo $(date -d "+$DAYS days $HOURS hours $MINS minutes" +%Y-%m-%d/%H:%M) "$@" | tee -a $AGENDA
+                    else
+                      echo $(date -d "${AT}" +%Y-%m-%d/%H:%M) "$@" | tee -a $AGENDA
+                    fi
 
         exit
 ;;
@@ -95,6 +99,15 @@ do
 ;;
         "-m"|"--minutes") MINS=$2
         if ! [[ "$MINS" =~ $NUMERIC ]]; then
+            echo "NO TIME GIVEN!!"
+            exit 1
+        fi
+        shift
+        shift
+;;
+        "--at") AT=$2
+        date -d "${AT}"
+        if [ "$?" -ne 0 ]; then
             echo "NO TIME GIVEN!!"
             exit 1
         fi
@@ -134,9 +147,9 @@ until [ $z -eq $i ] ; do
 	if [ $FECHA $PF "${PLANIFICADO[$z]}" ] ; then
 #		echo ${TAREA[$z]} "planificado para " ${PLANIFICADO[$z]} | wall -n
 		#beep
-        aplay $SOUND > /dev/null 2>&1
+                aplay $SOUND > /dev/null 2>&1
                 notify-send -i $ICO POTAGENDA "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" > /dev/null 2>&1
-                 #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
+                #zenity --title "POTAGENDA" --info --text "${TAREA[$z]} planificado para  ${PLANIFICADO[$z]}" 2>&1 /dev/null
                 zenity --question --text="${TAREA[$z]} planificado para  ${PLANIFICADO_RAW[$z]}\n\n5 minuticos mas?" --default-cancel  --title "POTAGENDA" > /dev/null 2>&1
                 if [ $? -eq 0 ]; then
                 #No lo aplazara si el recordatorio contiene "/", paso de corregirlo, no pongas putas barras surnormal
