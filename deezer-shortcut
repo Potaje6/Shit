@@ -1,0 +1,14 @@
+#!/bin/bash
+##Simple script to change Spotify music over command, for its use as hotkeys
+
+case $1 in
+	play )
+		dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause > /dev/null
+;;
+	next )
+		dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next > /dev/null
+;;
+	back )
+		dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous > /dev/null
+;;
+esac
