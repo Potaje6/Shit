@@ -1,5 +1,5 @@
 #!/bin/bash
-##Simple script to change Spotify music over command, for its use as hotkeys
+##Simple script to change Deezer music over command, for its use as hotkeys
 
 case $1 in
 	play )
