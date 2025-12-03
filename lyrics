@@ -19,7 +19,7 @@ NOT_FOUND=0
 #for spotify purposes, i swear!
 CHOICE=0
 CMUS_COMMAND="cmus-remote --server /run/user/1000/cmus-socket"
-FUCKING_TOKEN=4cbbde6e137c010b19fd025c3fd15151268e631c1a7ee4ec2a2e937791c7311a
+FUCKING_TOKEN=dd0794c1d8ae1f5ec43349364f29aa3c465c133f6f4bf2ef8598bf31591885ae
 
 trap force_exit SIGINT SIGTERM
 
@@ -50,7 +50,7 @@ fi
 SEARCH=$(echo $@|tr -s [:blank:] \+)
 
 #lynx -source https://search.azlyrics.com/search.php?q=$SEARCH | grep "target=\"_blank" |tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | while read NUMBER LINK NAME; do 
-lynx -source https://search.azlyrics.com/search.php?q=${SEARCH}\&x=$FUCKING_TOKEN| tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | grep -v "<td" | sed 's/">"/ /' | sed 's/"/ /' | sed 's/<a href=//g' | sed 's/^ //g' | sed "s/\">[0-9]. <span>/ /g" | sed 's/<\/span>//g' | tr -s [:blank:] | tr -d \"| while read LINK NAME; do 
+lynx -source https://www.azlyrics.com/search/?q=${SEARCH}\&x=$FUCKING_TOKEN| tr -s [:blank:] | sed 's/^\ //g' | sed 's/. <a href="/ /g' | sed 's/" target="_blank"><b>/ /' | sed 's/<..>//g' | sed 's/<.>//g' | grep "/lyrics/" | grep -v "<td" | sed 's/">"/ /' | sed 's/"/ /' | sed 's/<a href=//g' | sed 's/^ //g' | sed "s/\">[0-9]. <span>/ /g" | sed 's/<\/span>//g' | tr -s [:blank:] | tr -d \"| while read LINK NAME; do 
 i=$(($i+1))
 
 echo $i $NAME 
@@ -133,6 +133,29 @@ while true ; do
 done
 }
 
+deezer_mode(){
+if ! pgrep deezer > /dev/null ; then echo "deezer not running!"; exit ; fi 
+SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2 | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
+ARTIST=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | grep -A2 artist | tail -1 | cut -d '"' -f 2)
+
+OLD_SONG=$SONG
+OLD_ARTIST=$ARTIST
+search -s $ARTIST $SONG
+
+##Get in, we're invading france
+while true ; do
+	SONG=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | sed -n '/title/{n;p}' | cut -d '"' -f 2 | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')
+	ARTIST=$(dbus-send --print-reply --dest=org.mpris.MediaPlayer2.deezer /org/mpris/MediaPlayer2 org.freedesktop.DBus.Properties.Get string:org.mpris.MediaPlayer2.Player string:Metadata | grep -A2 artist | tail -1 | cut -d '"' -f 2 )
+	if [ ! "$SONG" == "$OLD_SONG" ] || [ ! "$ARTIST" == "$OLD_ARTIST" ];then
+		clear
+		search -s $SONG $ARTIST
+		OLD_SONG=$SONG
+		OLD_ARTIST=$ARTIST
+	fi
+	sleep 5
+done
+}
+
 cmus_mode(){
 if ! pgrep cmus > /dev/null ; then echo "cmus not running!"; exit ; fi 
 #SONG=$($CMUS_COMMAND -Q | grep tag | head -n 3  | sort -r | cut -d ' ' -f 3-  | sed -n 1p | awk -F " - " '{print $1}' | awk -F \( '{print $1}')
@@ -176,6 +199,8 @@ do
 print_uso
 ;;
 --spotify) spotify_mode
+;;
+--deezer) deezer_mode
 ;;
 --cmus) cmus_mode
 ;;
