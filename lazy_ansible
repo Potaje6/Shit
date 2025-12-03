@@ -6,6 +6,7 @@ LIST=$HOME/list
 LUSER=nologin
 PORT=22
 DEBUG=
+CONN_TMOUT=5
 bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setaf 1)
@@ -25,7 +26,7 @@ main(){
 MAQUINA=$1
 shift
 
-nc -z -w 5 $MAQUINA $PORT >/dev/null 2>&1
+nc -z -w $CONN_TMOUT $MAQUINA $PORT >/dev/null 2>&1
 if [ $? -ne 0 ] ; then
 #        MAQUINA_GES="${MAQUINA}-ges"
         echo "${blue}#### $i of $TOTAL ####${normal}" 
@@ -68,6 +69,7 @@ This script launches the command to the selected list of hosts
 -r SSH as root (shortcut to -u root)
 -u User to connect with ssh. Default $(echo "$LUSER")
 -p this 1 is tricky, password to connect to servers, for those cases where you don't have trusted RSAs, be careful where you use this option, it has to be on plain text as it is passed to sshpass, dont be retard, type a space before this execution to not include it in the history
+-t|--connection-timeout Change timeout of the connection check before each ssh
 -v debug mode for ssh
 
 ACHTUNG: This script is intended for simple commands
@@ -109,6 +111,10 @@ shift
 shift
 shift
 ;;
+-t|--connection-timeout) CONN_TMOUT=$2
+shift
+shift
+;;
 *) break
 ;;
 esac
@@ -119,9 +125,9 @@ if [ "$DEBUG" -eq 1 ]; then
 fi
 
 if [ -z "$PASS" ]; then
-        SSH_COMMAND="ssh $DEBUG -n -o StrictHostKeyChecking=accept-new -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+        SSH_COMMAND="ssh $DEBUG -n -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -o ConnectTimeout=2 -n"
 else
-        SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o StrictHostKeyChecking=accept-new -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -n"
+        SSH_COMMAND="/usr/bin/sshpass -p"$PASS" ssh $DEBUG $DEBUG -n -o StrictHostKeyChecking=no -o VerifyHostKeyDNS=no -o GSSAPIAuthentication=no -o StrictHostKeyChecking=no -o ConnectTimeout=2 -n"
 fi
 
 COMMANDS="$@"
