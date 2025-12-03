@@ -5,7 +5,7 @@
 ##Require ksh
 
 ##V Default user V##
-LUSER=dmolina
+LUSER=daniel.molina
 #^ Default user ^##
 
 i=0
