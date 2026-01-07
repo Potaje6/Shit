@@ -5,36 +5,40 @@
 
         case $1 in
         "up")
-                amixer -D pulse sset Master 10%+ > /dev/null
-                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                amixer sset Master 10%+ > /dev/null
+                #amixer -D pulse sset Master 10%+ > /dev/null
+                #notify-send -t 20 $(alsamixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 
 ;;
         "down")
-                amixer -D pulse sset Master 10%- > /dev/null
-                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                amixer sset Master 10%- > /dev/null
+                #amixer -D pulse sset Master 10%- > /dev/null
+                #notify-send -t 20 $(alsamixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 
 ;;
         "mute")
-                amixer -D pulse sset Master mute > /dev/null
-                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                amixer sset Master mute > /dev/null
+                #amixer -D pulse sset Master mute > /dev/null
+                #notify-send -t 20 $(alsamixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 
 ;;
         "unmute")
-                amixer -D pulse sset Master unmute > /dev/null
-                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                amixer sset Master unmute > /dev/null
+                #amixer -D pulse sset Master unmute > /dev/null
+                #notify-send -t 20 $(alsamixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 
 ;;
         "toggle_mic")
-                amixer set Capture toggle 
-                notify-send -t 20  "Microphone $(amixer sget Capture | tail -1 | cut -f 9 -d " ")"
-                STATE=$(amixer sget Capture | tail -1 | cut -f 9 -d " " | tr -d \[ | tr -d \])
+                alsamixer set Capture toggle 
+                notify-send -t 20  "Microphone $(alsamixer sget Capture | tail -1 | cut -f 9 -d " ")"
+                STATE=$(alsamixer sget Capture | tail -1 | cut -f 8 -d " " | tr -d \[ | tr -d \])
                 if [ $STATE == "off" ]; then
                         gsettings set org.gnome.desktop.interface show-battery-percentage false
                 elif [ $STATE == "on" ]; then
                         gsettings set org.gnome.desktop.interface show-battery-percentage true
                 fi
 
-                #notify-send -t 20 $(amixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
+                #notify-send -t 20 $(alsamixer -D pulse get Master |  grep  Front| grep --color=never   -E '[0-9]'| head -1 | awk '{print$5}' | sed 's/\[//g' | sed 's/\]//g')
 ;;
 
                 *)
