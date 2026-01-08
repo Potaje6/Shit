@@ -65,6 +65,8 @@ main() {
 
     if command -v chromium-browser > /dev/null; then
         browser=chromium-browser
+    elif command -v chromium > /dev/null; then
+        browser=chromium
     elif command -v google-chrome > /dev/null; then
         browser=google-chrome
     else
