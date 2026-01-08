@@ -1,6 +1,6 @@
 #!/bin/ksh
 
-ICO=/home/dmolinao/scripts/parametros/enjuto.jpeg
+ICO=/home/dmolina/scripts/parametros/enjuto.jpeg
 PLAYING="$(cmus-remote -Q | grep "tag title" | sed 's/tag title //' | awk -F " - " '{print $1}' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
 STREAM="$(cmus-remote -Q | grep "^stream" | sed 's/stream //' | sed 's/ (.*)//g' | sed 's/ \[.*\]//g')"
 
