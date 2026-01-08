@@ -86,7 +86,7 @@ logdis(){
 #What do we say to the god of death?
 not_today(){
 if [ $BRIGHTME -eq 1 ]; then
-   if [ "$HOSTNAME" == "nlgtop-dmolina" ]; then
+   if [ "$HOSTNAME" == "nlgtop-dmolina-old" ]; then
       ~dmolinao/scripts/random_strings
    else
     echo | nc -N -w1 ismyshit.online 8888
