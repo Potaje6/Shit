@@ -1,6 +1,8 @@
 #!/bin/bash
 ##Daniel Molina
 ##Script para controlar volument etc por comando + parametro, util para hotkey
+#necesita alsa-tools
+
 
 
         case $1 in
@@ -29,9 +31,9 @@
 
 ;;
         "toggle_mic")
-                alsamixer set Capture toggle 
-                notify-send -t 20  "Microphone $(alsamixer sget Capture | tail -1 | cut -f 9 -d " ")"
-                STATE=$(alsamixer sget Capture | tail -1 | cut -f 8 -d " " | tr -d \[ | tr -d \])
+                amixer set Capture toggle 
+                notify-send -t 20  "Microphone $(amixer sget Capture | tail -1 | cut -f 9 -d " ")"
+                STATE=$(amixer sget Capture | tail -1 | cut -f 8 -d " " | tr -d \[ | tr -d \])
                 if [ $STATE == "off" ]; then
                         gsettings set org.gnome.desktop.interface show-battery-percentage false
                 elif [ $STATE == "on" ]; then
