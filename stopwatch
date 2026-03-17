@@ -1,0 +1,28 @@
+stopwatch() {
+    reminder=0
+    trap stahp SIGINT SIGTERM
+    WORK_PATH=$HOME/WORK_TIMERS/
+    DEFAULT=$WORK_PATH/timers
+    stahp(){
+    echo END $1 $(date +"%Y-%m%d %H:%M%S   %s") >> ${DEFAULT}/$START
+    }
+    if [ ! -z $1 ]; then
+           DEFAULT=${DEFAULT}/$1
+           mkdir -p $DEFAULT
+    fi
+    START=$(date +%s)
+    START_H=$(date +"%Y-%m%d %H:%M:%S   %s")
+    echo START $1 $START_H > ${DEFAULT}/$START
+    while true; do
+        if [ $reminder -ge 5 ]; then
+          notify-send -t 3 "NOW WORKING --- $1 $ELAPSED"
+          reminder=0
+        fi
+        time="$(( $(date +%s) - $START))"
+        printf '%s\r' "$(date -u -d "@$time" +%H:%M:%S)"
+        ELAPSED=$(printf '%s\r' "$(date -u -d "@$time" +%H:%M:%S)")
+        echo WORKING $1 $(date +"%Y-%m-%d %H:%M:%S   %s") >> ${DEFAULT}/$START
+        reminder=$(($reminder+1))
+        sleep 1
+    done
+}
