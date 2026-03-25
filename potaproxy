@@ -19,6 +19,7 @@ print_uso(){
     cat <<EOF
 ./${EXEC_NAME} user@host
 -p specify port to make the ssh connection
+-J specify user@host to jump to final destination 
 EOF
 }
 
@@ -91,6 +92,7 @@ main() {
     done
 
     ssh \
+        $JUMP_PARAM \
         -q -p $SSH_PORT -f \
         -o 'ControlMaster no' \
         -o 'ControlPath /dev/null' \
@@ -139,8 +141,13 @@ do
     case $1 in
         -h|--help)     
         print_uso
+        exit
         ;;
         -p) SSH_PORT=$2
+        shift
+        shift
+        ;;
+        -J) JUMP_PARAM="-J $2"
         shift
         shift
         ;;
