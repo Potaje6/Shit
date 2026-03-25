@@ -4,7 +4,7 @@
 #Redone from zero cuz how i did before was totally retarded, i still dunno why tf i did it like that
 #Made because im too lazy to decompress and keep it organized over 2 days
 
-STUFF=/home/dmolinao/3D
+STUFF=/home/dmolina/3D
 PROJECTS=${STUFF}/PROJECTS
 PACKAGES=${STUFF}/PACKAGES
 ZIP_FILE=$1
